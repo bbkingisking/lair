@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const poems = await getCollection('poems');
+  return poems.map(poem => ({
+    params: { slug: poem.id },
+    props: { poem },
+  }));
+}
+
+const { poem } = Astro.props;
+// Redirect to the canonical language key (which is literally "canonical" in your schema)
+return Astro.redirect(`/poems/${poem.id}/canonical`);
+---

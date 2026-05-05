@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import { getScriptClass } from '../../../utils/language-map';
+import PoemDisplay from '../../../components/PoemDisplay.astro';
+import LanguageSwitcher from '../../../components/LanguageSwitcher.astro';
+
+export async function getStaticPaths() {
+  const poems = await getCollection('poems');
+  const paths = [];
+  for (const poem of poems) {
+    for (const langKey of Object.keys(poem.data)) {
+      paths.push({
+        params: { slug: poem.id, lang: langKey },
+        props: { poem, langKey },
+      });
+    }
+  }
+  return paths;
+}
+
+const { poem, langKey } = Astro.props;
+const version = poem.data[langKey];
+
+if (!version || !version.text) {
+  return Astro.redirect('/404');
+}
+
+const canonical = poem.data.canonical;
+const language = version.language || 'en'; // guaranteed string
+const scriptClass = getScriptClass(language);
+
+const available = Object.entries(poem.data)
+  .filter(([_, v]) => v && v.text) // only need text to be present
+  .map(([key, v]) => ({
+    key,
+    label: v.title || key,
+    language: v.language || 'en', // fallback to 'en'
+  }));
+---
+
+<Base title={version.title || canonical.title || 'Untitled'} language={language} scriptClass={scriptClass}>
+  <LanguageSwitcher available={available} current={langKey} slug={poem.id} />
+  <PoemDisplay
+    title={version.title}
+    author={version.author}
+    translator={version.translator}
+    language={language}
+    text={version.text}
+  />
+</Base>

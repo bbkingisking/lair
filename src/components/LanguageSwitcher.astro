@@ -1,0 +1,57 @@
+---
+import { getScriptClass } from '../utils/language-map';
+
+export interface Props {
+  available: { key: string; label: string; language: string }[];
+  current: string;   // the currently active language key
+  slug: string;      // poem slug
+}
+
+const { available, current, slug } = Astro.props;
+---
+
+<nav class="lang-switcher" aria-label="Language selector">
+  {available.map(({ key, label, language }) => (
+    <a
+      href={`/poems/${slug}/${key}`}
+      class:list={['lang-tab', { active: key === current }]}
+      lang={language}
+      data-script={getScriptClass(language)}
+    >
+      {label}
+    </a>
+  ))}
+</nav>
+
+<style>
+  .lang-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #dcd5c6;
+    padding-bottom: 0.4rem;
+  }
+
+  .lang-tab {
+    padding: 0.3rem 0.8rem;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.9rem;
+    border-radius: 4px 4px 0 0;
+    transition: background 0.2s;
+  }
+
+  .lang-tab:hover {
+    background: #ece6d9;
+    color: #1a1a1a;
+  }
+
+  .lang-tab.active {
+    background: #fdfaf3;
+    color: #1a1a1a;
+    font-weight: bold;
+    border: 1px solid #dcd5c6;
+    border-bottom-color: transparent;
+  }
+</style>
