@@ -1,0 +1,21 @@
+---
+// Any props you want to pass from pages
+export interface Props {
+  title: string;
+  language?: string;
+}
+
+const { title, language = 'en' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={language}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+</head>
+<body>
+  <slot />
+</body>
+</html>

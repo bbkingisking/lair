@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const poems = await getCollection('poems');
+  return poems.map(poem => ({
+    params: { slug: poem.id },
+    props: { poem },
+  }));
+}
+
+const { poem } = Astro.props;
+const canonical = poem.data.canonical;
+---
+
+<Base title={canonical.title || 'Untitled'} language={canonical.language || 'en'}>
+  <pre>{canonical.text}</pre>
+</Base>
