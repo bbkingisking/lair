@@ -1,0 +1,46 @@
+canonical:
+  title: Finding Contentment
+  author: Lee Gyeongbo
+  language: eng
+  text: |-
+    Alone I sit and pluck my zither,
+    Solitary, I hum and raise my cup.
+    My ears are satisfied,
+    My lips are pleased.
+    Why seek a kindred spirit?
+    Why need a drinking companion?
+    When the heart finds its accord,
+    Joy arrives unbidden.
+    This ancient wisdom I embrace:
+    It is the truth I must pursue.
+  footnotes:
+    - The phrase 'kindred spirit' (知音) alludes to the legend of the zither master Bo Ya and his only true friend Zhong Ziqi. When Ziqi died, Bo Ya never played again, having lost the one who understood his music. The poet here transcends this longing, finding fulfillment in solitary appreciation.
+lzh:
+  title: 適意
+  author: 李奎報
+  language: lzh
+  text: 獨坐自彈琴獨吟頻擧酒旣不負吾耳又不負吾口何須待知音亦莫須飮友適意則爲歡此言吾必取
+  rtl: true
+  vertical: true
+lzh_formatted:
+  title: 適意
+  author: 李奎報
+  language: lzh
+  text: 獨坐自彈琴。獨吟頻擧酒。旣不負吾耳。又不負吾口。何須待知音。亦莫須飮友。適意則爲歡。此言吾必取。
+korean:
+  title: 적의
+  author: 이규보
+  language: kor
+  text: |-
+    홀로 앉아 스스로 거문고 타고
+    혼자 읊으면서 자주 술잔 드나니
+    이미 내 귀를 저버리지 않았거니
+    또 내 입도 저버리지 않았노라
+    무엇하러 구태여 지음 구하랴
+    함께 마실 술벗이 없어도 좋네
+    뜻에 맞으면 곧 즐겁다
+    나는 이 옛말을 반드시 취하리
+  url: https://db.itkc.or.kr/dir/item?itemId=BT#dir/node?dataId=ITKC_BT_1365A_0070_010_0230&viewSync=OT
+  footnotes:
+  - key: '[주-D001] 지음(知音) : '
+    value: 옛날에 백아(伯牙)가 거문고를 잘 탔는데, 그 친구인 종자기(鍾子期)만이 그 곡조를 알아들었다. 종자기가 죽은 뒤에는 백아가 다시 거문고를 타지 않았다.

@@ -1,0 +1,51 @@
+canonical:
+  title: A Girl of Jiangnan
+  author: Choi Chi-won
+  language: eng
+  text: |-
+    In Jiangnan the customs run loose and wild,
+    They raise their daughters delicate and mild.
+    With idle natures scorning needle's thread,
+    They dress them up to play the pipes instead.
+    No taste for noble music do they seek—
+    Their melodies are all of spring's critique.
+    They boast of beauty, bloom, and youthful grace,
+    Believing eternal spring adorns their face.
+    Yet how they mock the neighbor's working daughter,
+    Who works her loom from dawn till twilight's water.
+    Though weaving wears her body to the bone,
+    The finest silks she'll never call her own.
+  footnotes:
+    - Jiangnan refers to the region south of the Yangtze River in China, historically known for its refined culture and, in this poem's critique, its indulgent customs.
+    - The contrast between the idle daughter who plays music and the industrious neighbor reflects a moral critique of luxury divorced from productive labor.
+lzh:
+  title: 江南女
+  author: 崔致遠
+  language: lzh
+  text: 江南蕩風俗養女嬌且憐冶性恥針線粧成調管絃所學非雅音多被春心牽自謂芳華色長占艷陽年却笑隣舍女終朝弄機杼機杼縱勞身羅衣不到汝
+  rtl: true
+  vertical: true
+lzh_formatted:
+  title: 江南女
+  author: 崔致遠
+  language: lzh
+  text: 江南蕩風俗。養女嬌且憐。冶性恥針線。粧成調管絃。所學非雅音。多被春心牽。自謂芳華色。長占艷陽年。却笑隣舍女。終朝弄機杼。機杼縱勞身。羅衣不到汝。
+korean:
+  title: 강남녀
+  author: 최치원
+  language: kor
+  text: |-
+    강남 땅은 풍속이 음탕하기에
+    딸을 길러 아리땁고 예뻐라
+    놀아나는 성품은 바느질을 싫어하고
+    단장 마치고 관현을 희롱하네
+    고상한 곡조 배우지 않았기에
+    그 소리 대개 춘정에 이끌리네
+    스스로 꽃답고 아름다운 그 얼굴
+    언제나 청춘일 줄 생각하네
+    아침 내내 베틀에서 북을 놀린다고
+    이웃집 딸을 도리어 비웃나니
+    비록 베를 짜노라 몸을 괴롭혀도
+    마침내 비단옷은 너에게 안 간다고
+  url: https://db.itkc.or.kr/dir/item?itemId=BT#dir/node?dataId=ITKC_BT_1365A_0070_010_0040&viewSync=OT
+

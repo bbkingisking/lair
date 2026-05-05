@@ -1,0 +1,44 @@
+canonical:
+  title: Building a Cottage
+  author: Jung Po
+  language: eng
+  text: |-
+    I built my cottage in a bend of the creek,
+    In a place remote and desolate, my heart wandering.
+    Mountain light fills the space where I sit,
+    And the creek sings outside my window.
+    I sing high the song of purple fungus,
+    Gently caressing the crimson strings.
+    No carriages or horses come to my gate—
+    This joy could last me all my years.
+  footnotes:
+    - The 'song of purple fungus' (紫芝曲) is a classical allusion to a hermit's song of contentment in seclusion, referencing Taoist immortality and freedom from worldly concerns.
+    - The 'crimson strings' refer to a stringed instrument, likely a zither or guqin, symbolizing refined artistic pursuits and contemplative solitude.
+lzh:
+  title: 結廬
+  author: 鄭誧
+  language: lzh
+  text: 結廬在澗曲地僻心茫然山光滿席上澗水鳴窓前高謌紫芝曲靜撫朱絲絃門無車馬至此樂可終年
+  rtl: true
+  vertical: true
+lzh_formatted:
+  title: 結廬
+  author: 鄭誧
+  language: lzh
+  text: 結廬在澗曲。地僻心茫然。山光滿席上。澗水鳴窓前。高謌紫芝曲。靜撫朱絲絃。門無車馬至。此樂可終年。
+korean:
+  title: 초가집을 지으며
+  author: 정포
+  language: kor
+  text: |-
+    초가집 지어 시내 구비에 있으니
+    땅은 궁벽하고 마음은 망연하다
+    산 빛은 자리 위에 가득하고
+    시냇물은 창 앞에 운다
+    높이 자지곡을 노래하며
+    고요히 주현금을 어루만진다
+    문에는 이르는 거마 없으니
+    이 즐거움이야 해를 마칠 만하다
+  url: https://db.itkc.or.kr/dir/item?itemId=BT#dir/node?dataId=ITKC_BT_1365A_0070_010_0550&viewSync=OT
+  footnotes: []
+

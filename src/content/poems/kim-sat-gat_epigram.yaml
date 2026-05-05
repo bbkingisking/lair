@@ -1,0 +1,45 @@
+---
+canonical:
+  title: Epigram
+  author: Kim Sat Gat
+  language: eng
+  text: |
+    The rich suffer from their wealth, 
+    The poor from their poverty;
+    To feel hungry and to feel stuffed 
+    Are different, but same in suffering.
+
+    To be either rich or poor
+    Is not my wish;
+    I just want to be a person, 
+    Neither rich nor poor.
+original:
+  title: 警世
+  author: 金炳淵
+  language: lzh
+  rtl: true
+  vertical: true
+  text: |
+    富人困富貧困貧
+    饑飽雖殊困則均
+    貧富俱非吾所願
+    願爲不富不貧人
+korean:
+  title: 경세
+  author: 김삿갓
+  language: kor
+  text: |
+    부자는 부자대로 부족함이 있고
+    가난한 자는 가난한대로 부족함이 있으니
+    부자와 가난한 자의 부족함은 다르나 곤란은 같구나
+    부자와 가난한 자 모두 내가 원하는 것이 아니로다
+    다만 부유하지도 가난하지도 않는 사람이 되길 바랄 뿐이네
+hanja_eum:
+  title: 경세 (한자음)
+  author: 김삿갓
+  language: kor
+  text: |
+    부인곤부빈곤빈
+    기포수수곤칙균
+    빈부구비오소원
+    원위불부불빈인
