@@ -6,7 +6,7 @@ export interface Props {
   showSidebar?: boolean;
   sidebarContent?: any;
   scriptClass?: string;
-  searchIndex?: Array<{ title: string; author: string; slug: string; lang: string }>;
+  searchIndex?: Array<{ title: string; author: string; slug: string; lang: string; text: string }>;
 }
 
 const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin', searchIndex } = Astro.props;
@@ -402,6 +402,19 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       color: var(--ink-faint);
       font-style: italic;
     }
+    .search-section-header {
+      padding: 0.4rem 1rem 0.2rem;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      background: var(--paper);
+      border-bottom: 1px solid var(--paper-dark);
+    }
+    .search-section-header:not(:first-child) {
+      border-top: 1px solid var(--border);
+    }
   </style>
 </head>
 <body class={scriptClass}>
@@ -447,23 +460,45 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
 
       function search(query) {
         var q = query.toLowerCase();
-        return index.filter(function(p) {
-          return p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q);
-        }).slice(0, 8);
+        var titleAuthor = [];
+        var textOnly = [];
+        for (var i = 0; i < index.length; i++) {
+          var p = index[i];
+          var titleMatch = p.title.toLowerCase().includes(q);
+          var authorMatch = p.author.toLowerCase().includes(q);
+          if (titleMatch || authorMatch) {
+            titleAuthor.push(p);
+          } else if (p.text.toLowerCase().includes(q)) {
+            textOnly.push(p);
+          }
+        }
+        return { titleAuthor: titleAuthor.slice(0, 8), textOnly: textOnly.slice(0, 8) };
       }
 
-      function render(matches) {
-        if (!matches.length) {
+      function renderResult(p, idx) {
+        return '<a href="/poems/' + p.slug + '/' + p.lang + '" class="search-result" data-idx="' + idx + '">' +
+          '<div class="search-result-title">' + p.title + '</div>' +
+          '<div class="search-result-author">' + p.author + '</div>' +
+        '</a>';
+      }
+
+      function render(groups) {
+        var total = groups.titleAuthor.length + groups.textOnly.length;
+        if (!total) {
           results.innerHTML = '<div class="search-no-results">No poems found</div>';
           results.classList.add('open');
           return;
         }
-        results.innerHTML = matches.map(function(p, i) {
-          return '<a href="/poems/' + p.slug + '/' + p.lang + '" class="search-result' + (i === focused ? ' focused' : '') + '">' +
-            '<div class="search-result-title">' + p.title + '</div>' +
-            '<div class="search-result-author">' + p.author + '</div>' +
-          '</a>';
-        }).join('');
+        var html = '';
+        if (groups.titleAuthor.length) {
+          html += '<div class="search-section-header">Title / Author</div>';
+          html += groups.titleAuthor.map(function(p, i) { return renderResult(p, i); }).join('');
+        }
+        if (groups.textOnly.length) {
+          html += '<div class="search-section-header">Text</div>';
+          html += groups.textOnly.map(function(p, i) { return renderResult(p, i + groups.titleAuthor.length); }).join('');
+        }
+        results.innerHTML = html;
         results.classList.add('open');
       }
 

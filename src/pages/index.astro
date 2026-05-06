@@ -63,9 +63,21 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
   return getTitle(a).localeCompare(getTitle(b));
 });
 
-const searchIndex = allPoems
-  .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: getTitle(p), author: getAuthor(p), slug: p.id, lang: 'canonical' }));
+const searchIndex = allPoems.flatMap(p => {
+  const versions: any[] = [];
+  for (const [key, val] of Object.entries(p.data)) {
+    if (val && typeof val === 'object' && 'text' in val) {
+      versions.push({
+        title: (val as any).title || getTitle(p),
+        author: (val as any).author || getAuthor(p),
+        slug: p.id,
+        lang: key,
+        text: (val as any).text,
+      });
+    }
+  }
+  return versions;
+});
 ---
 
 <LairLayout title="The dragon's lair" showSidebar={false} searchIndex={searchIndex}>
