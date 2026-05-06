@@ -1,10 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../../layouts/Base.astro';
+import LairLayout from '../../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../../utils/language-map';
 import PoemDisplay from '../../../components/PoemDisplay.astro';
-import LanguageSwitcher from '../../../components/LanguageSwitcher.astro';
-import CompareButton from '../../../components/CompareButton.astro';
 
 export async function getStaticPaths() {
   const poems = await getCollection('poems');
@@ -32,28 +30,206 @@ const language = version.language || 'en';
 const scriptClass = getScriptClass(language);
 const isRtl = version.rtl === true;
 const isVertical = version.vertical === true;
-// Don't apply RTL to the entire page if text is vertical - vertical writing handles its own directionality
-const dir = (isRtl && !isVertical) ? 'rtl' : 'ltr';
 
 const available = Object.entries(poem.data)
-  .filter(([_, v]) => v && v.text) // only need text to be present
+  .filter(([_, v]) => v && v.text)
   .map(([key, v]) => ({
     key,
     label: v.title || key,
-    language: v.language || 'en', // fallback to 'en'
+    language: v.language || 'en',
   }));
+
+const LANG_NAMES: Record<string, string> = {
+  eng: 'English',
+  en: 'English',
+  bul: 'Bulgarian',
+  fra: 'French',
+  jpn: 'Japanese',
+  lzh: 'Classical Chinese',
+  kor: 'Korean',
+  rus: 'Russian',
+  fas: 'Persian',
+  okm: 'Middle Korean',
+  'zho-Hans': 'Chinese',
+  deu: 'German',
+  ita: 'Italian'
+};
+
+const formatVersionLabel = (key: string, lang?: string) => {
+  const labels: Record<string, string> = {
+    canonical: 'Translation',
+    original: 'Original',
+    lzh: 'Classical Chinese',
+    lzh_formatted: 'Classical Chinese (formatted)',
+    korean: 'Korean',
+    modern_korean: 'Modern Korean',
+    middle_korean: 'Middle Korean',
+    modern_chinese: 'Modern Chinese',
+    hanja_eum: 'Hanja Reading',
+    translation: 'Alt. Translation'
+  };
+  
+  if (key === 'canonical' && lang) {
+    return LANG_NAMES[lang] || lang.toUpperCase();
+  }
+  
+  return labels[key] || key;
+};
 ---
 
-<Base title={version.title || canonical.title || 'Untitled'} language={language} scriptClass={scriptClass} dir={dir}>
-  <CompareButton slug={poem.id} currentLang={langKey} available={available} />
-  <LanguageSwitcher available={available} current={langKey} slug={poem.id} />
-  <PoemDisplay
-    title={version.title}
-    author={version.author}
-    translator={version.translator}
-    language={language}
-    text={version.text}
-    rtl={isRtl}
-    vertical={isVertical}
-  />
-</Base>
+<LairLayout title={version.title || canonical.title || 'Untitled'}>
+  <style>
+    .poem-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .poem-title {
+      font-family: 'IM Fell English', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+    
+    .poem-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      margin-top: 0.75rem;
+      align-items: baseline;
+    }
+    
+    .poem-author {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--ink-light);
+    }
+    
+    .poem-author strong {
+      font-style: normal;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .versions-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+      flex-wrap: wrap;
+    }
+    
+    .version-tab {
+      padding: 0.5rem 1rem;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      background: none;
+      color: var(--ink-faint);
+      text-decoration: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+    }
+    
+    .version-tab:hover {
+      color: var(--ink);
+    }
+    
+    .version-tab.active {
+      color: var(--rust);
+      border-bottom-color: var(--rust);
+    }
+
+    .poem-text {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--ink);
+      white-space: pre-wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .poem-text.script-latin {
+      font-family: 'IMFellEnglish', serif;
+    }
+
+    .poem-text.script-cyrillic {
+      font-family: 'Marxiana', serif;
+    }
+
+    .poem-text.script-hanzi {
+      font-family: 'ZhuqueFangsong', serif;
+    }
+
+    .poem-text.script-hangul {
+      font-family: 'AGChoiJeongHo', serif;
+    }
+
+    .poem-text.rtl {
+      direction: rtl;
+      text-align: right;
+      font-size: 1.15rem;
+      line-height: 2.1;
+    }
+
+    .poem-text.vertical {
+      writing-mode: vertical-rl;
+      direction: rtl;
+      height: auto;
+      min-height: 200px;
+      max-height: 70vh;
+      overflow-x: auto;
+      padding: 0.5rem;
+      font-size: 1rem;
+      line-height: 2;
+    }
+
+    .translator-credit {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--ink-faint);
+      margin-top: 1.5rem;
+    }
+  </style>
+
+  <div class="poem-header">
+    <div class="poem-title">{version.title || canonical.title}</div>
+    <div class="poem-meta">
+      <span class="poem-author">
+        <strong>{version.author || canonical.author}</strong>
+      </span>
+    </div>
+  </div>
+
+  <nav class="versions-nav">
+    {available.map(({ key, language: versionLang }) => (
+      <a
+        href={`/poems/${poem.id}/${key}`}
+        class:list={['version-tab', { active: key === langKey }]}
+        lang={versionLang}
+        data-script={getScriptClass(versionLang)}
+      >
+        {formatVersionLabel(key, versionLang)}
+      </a>
+    ))}
+  </nav>
+
+  <div 
+    class:list={['poem-text', scriptClass, { rtl: isRtl, vertical: isVertical }]}
+    lang={language}
+  >
+    {version.text}
+  </div>
+
+  {version.translator && (
+    <div class="translator-credit">
+      Translated by {Array.isArray(version.translator) ? version.translator.join(', ') : version.translator}
+    </div>
+  )}
+</LairLayout>
