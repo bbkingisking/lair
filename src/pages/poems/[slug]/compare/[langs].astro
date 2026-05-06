@@ -34,6 +34,16 @@ const version1 = poem.data[lang1];
 const version2 = poem.data[lang2];
 const sourceUrl = poem.data.sourceUrl as string | undefined;
 
+// Version-specific links
+function isValidUrl(str: string): boolean {
+  try { new URL(str); return true; } catch { return false; }
+}
+
+const webUrl1 = version1.source && isValidUrl(version1.source) ? version1.source : undefined;
+const isbnUrl1 = version1.isbn ? `https://openlibrary.org/isbn/${version1.isbn}` : undefined;
+const webUrl2 = version2.source && isValidUrl(version2.source) ? version2.source : undefined;
+const isbnUrl2 = version2.isbn ? `https://openlibrary.org/isbn/${version2.isbn}` : undefined;
+
 if (!version1 || !version1.text || !version2 || !version2.text) {
   return Astro.redirect('/404');
 }
@@ -67,6 +77,8 @@ const isVertical2 = version2.vertical === true;
         compareSide="left"
         compareOtherLang={lang2}
         sourceUrl={sourceUrl}
+        webUrl={webUrl1}
+        isbnUrl={isbnUrl1}
       />
       <PoemDisplay
         title={version1.title}
@@ -88,6 +100,8 @@ const isVertical2 = version2.vertical === true;
         compareSide="right"
         compareOtherLang={lang1}
         sourceUrl={sourceUrl}
+        webUrl={webUrl2}
+        isbnUrl={isbnUrl2}
       />
       <PoemDisplay
         title={version2.title}

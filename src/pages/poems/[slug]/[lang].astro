@@ -33,6 +33,17 @@ const isVertical = version.vertical === true;
 
 const sourceUrl = poem.data.sourceUrl as string | undefined;
 
+// Version-specific links
+const versionSource = version.source as string | undefined;
+const versionIsbn = version.isbn as string | undefined;
+
+function isValidUrl(str: string): boolean {
+  try { new URL(str); return true; } catch { return false; }
+}
+
+const webUrl = versionSource && isValidUrl(versionSource) ? versionSource : undefined;
+const isbnUrl = versionIsbn ? `https://openlibrary.org/isbn/${versionIsbn}` : undefined;
+
 const available = Object.entries(poem.data)
   .filter(([_, v]) => v && v.text)
   .map(([key, v]) => ({
@@ -114,8 +125,13 @@ const formatVersionLabel = (key: string, lang?: string) => {
       border-bottom-color: var(--rust);
     }
 
-    .source-link {
+    .source-icons {
       margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .source-link {
       display: flex;
       align-items: center;
       padding: 0.5rem 0.75rem;
@@ -145,10 +161,24 @@ const formatVersionLabel = (key: string, lang?: string) => {
         {formatVersionLabel(key, versionLang)}
       </a>
     ))}
-    {sourceUrl && (
-      <a href={sourceUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source on GitHub">
-        <img src="/git.svg" alt="Git" width="16" height="16" />
-      </a>
+    {(isbnUrl || webUrl || sourceUrl) && (
+      <span class="source-icons">
+        {isbnUrl && (
+          <a href={isbnUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View on Open Library">
+            <img src="/isbn.svg" alt="ISBN" width="16" height="16" />
+          </a>
+        )}
+        {webUrl && (
+          <a href={webUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source">
+            <img src="/web.svg" alt="Web" width="16" height="16" />
+          </a>
+        )}
+        {sourceUrl && (
+          <a href={sourceUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source on GitHub">
+            <img src="/git.svg" alt="Git" width="16" height="16" />
+          </a>
+        )}
+      </span>
     )}
   </nav>
 

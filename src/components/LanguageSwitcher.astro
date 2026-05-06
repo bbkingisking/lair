@@ -9,9 +9,11 @@ export interface Props {
   compareSide?: 'left' | 'right';  // which side of the comparison
   compareOtherLang?: string;  // the language on the other side
   sourceUrl?: string;  // GitHub source link
+  webUrl?: string;     // version-specific source URL
+  isbnUrl?: string;    // version-specific ISBN link
 }
 
-const { available, current, slug, compareMode = false, compareSide, compareOtherLang, sourceUrl } = Astro.props;
+const { available, current, slug, compareMode = false, compareSide, compareOtherLang, sourceUrl, webUrl, isbnUrl } = Astro.props;
 
 // Build the href based on mode
 const buildHref = (langKey: string) => {
@@ -37,10 +39,24 @@ const buildHref = (langKey: string) => {
       {label}
     </a>
   ))}
-  {sourceUrl && (
-    <a href={sourceUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source on GitHub">
-      <img src="/git.svg" alt="Git" width="16" height="16" />
-    </a>
+  {(isbnUrl || webUrl || sourceUrl) && (
+    <span class="source-icons">
+      {isbnUrl && (
+        <a href={isbnUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View on Open Library">
+          <img src="/isbn.svg" alt="ISBN" width="16" height="16" />
+        </a>
+      )}
+      {webUrl && (
+        <a href={webUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source">
+          <img src="/web.svg" alt="Web" width="16" height="16" />
+        </a>
+      )}
+      {sourceUrl && (
+        <a href={sourceUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source on GitHub">
+          <img src="/git.svg" alt="Git" width="16" height="16" />
+        </a>
+      )}
+    </span>
   )}
 </nav>
 
@@ -76,8 +92,13 @@ const buildHref = (langKey: string) => {
     border-bottom-color: transparent;
   }
 
-  .source-link {
+  .source-icons {
     margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .source-link {
     display: flex;
     align-items: center;
     padding: 0.3rem 0.5rem;
