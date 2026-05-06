@@ -38,7 +38,7 @@ const uniqueAuthors = Object.keys(authorGroups).sort();
 const languageGroups = allPoems.reduce((acc: any, poem) => {
   // Get all keys from poem.data
   const allVersions = Object.keys(poem.data);
-  
+
   allVersions.forEach(versionKey => {
     const version = poem.data[versionKey];
     if (version && typeof version === 'object' && 'text' in version) {
@@ -52,7 +52,7 @@ const languageGroups = allPoems.reduce((acc: any, poem) => {
       }
     }
   });
-  
+
   return acc;
 }, {});
 
@@ -75,6 +75,14 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       width: 100%;
     }
 
+    /* LOGO */
+    .logo {
+      width: 180px;
+      height: auto;
+      margin-top: -4.0rem;
+      margin-bottom: 1.5rem;
+    }
+
     /* ELEVATED SEARCH */
     .search-container {
       width: 100%;
@@ -82,13 +90,13 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       justify-content: center;
       margin-bottom: 2.5rem;
     }
-    
+
     .search-wrap {
       width: 100%;
       max-width: 600px;
       position: relative;
     }
-    
+
     .search-wrap::before {
       content: '⌕';
       position: absolute;
@@ -99,7 +107,7 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       font-size: 1.2rem;
       pointer-events: none;
     }
-    
+
     #search {
       width: 100%;
       padding: 0.85rem 1rem 0.85rem 2.5rem;
@@ -113,15 +121,15 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       transition: all 0.2s;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
-    
-    #search:focus { 
+
+    #search:focus {
       border-color: var(--rust);
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    
-    #search::placeholder { 
-      color: var(--ink-faint); 
-      font-style: italic; 
+
+    #search::placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
     }
 
     /* TABBED BOX */
@@ -297,6 +305,7 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
   </style>
 
   <div class="index-container">
+    <img src="/logo.svg" alt="The dragon's lair" class="logo">
     <div class="search-container">
       <div class="search-wrap">
         <input type="text" id="search" placeholder="Search titles, authors, lines…" autocomplete="off">
