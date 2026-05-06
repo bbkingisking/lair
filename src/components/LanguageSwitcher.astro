@@ -8,9 +8,10 @@ export interface Props {
   compareMode?: boolean;  // whether we're in compare view
   compareSide?: 'left' | 'right';  // which side of the comparison
   compareOtherLang?: string;  // the language on the other side
+  sourceUrl?: string;  // GitHub source link
 }
 
-const { available, current, slug, compareMode = false, compareSide, compareOtherLang } = Astro.props;
+const { available, current, slug, compareMode = false, compareSide, compareOtherLang, sourceUrl } = Astro.props;
 
 // Build the href based on mode
 const buildHref = (langKey: string) => {
@@ -36,6 +37,11 @@ const buildHref = (langKey: string) => {
       {label}
     </a>
   ))}
+  {sourceUrl && (
+    <a href={sourceUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View source on GitHub">
+      <img src="/git.svg" alt="Git" width="16" height="16" />
+    </a>
+  )}
 </nav>
 
 <style>
@@ -68,5 +74,24 @@ const buildHref = (langKey: string) => {
     font-weight: bold;
     border: 1px solid #dcd5c6;
     border-bottom-color: transparent;
+  }
+
+  .source-link {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    padding: 0.3rem 0.5rem;
+    opacity: 0.4;
+    transition: opacity 0.15s;
+  }
+
+  .source-link:hover {
+    opacity: 0.8;
+  }
+
+  .source-link img {
+    filter: grayscale(100%);
+    width: 16px;
+    height: 16px;
   }
 </style>

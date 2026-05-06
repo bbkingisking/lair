@@ -32,6 +32,7 @@ export async function getStaticPaths() {
 const { poem, lang1, lang2 } = Astro.props;
 const version1 = poem.data[lang1];
 const version2 = poem.data[lang2];
+const sourceUrl = poem.data.sourceUrl as string | undefined;
 
 if (!version1 || !version1.text || !version2 || !version2.text) {
   return Astro.redirect('/404');
@@ -58,13 +59,14 @@ const isVertical2 = version2.vertical === true;
 <Base title={`${version1.title || canonical.title || 'Untitled'} — Compare`} language={language1}>
   <div class="compare-container">
     <div class="poem-panel" dir={isRtl1 && !isVertical1 ? 'rtl' : 'ltr'}>
-      <LanguageSwitcher 
-        available={available} 
-        current={lang1} 
+      <LanguageSwitcher
+        available={available}
+        current={lang1}
         slug={poem.id}
         compareMode={true}
         compareSide="left"
         compareOtherLang={lang2}
+        sourceUrl={sourceUrl}
       />
       <PoemDisplay
         title={version1.title}
@@ -78,13 +80,14 @@ const isVertical2 = version2.vertical === true;
     </div>
     
     <div class="poem-panel" dir={isRtl2 && !isVertical2 ? 'rtl' : 'ltr'}>
-      <LanguageSwitcher 
-        available={available} 
-        current={lang2} 
+      <LanguageSwitcher
+        available={available}
+        current={lang2}
         slug={poem.id}
         compareMode={true}
         compareSide="right"
         compareOtherLang={lang1}
+        sourceUrl={sourceUrl}
       />
       <PoemDisplay
         title={version2.title}
