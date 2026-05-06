@@ -6,9 +6,10 @@ export interface Props {
   showSidebar?: boolean;
   sidebarContent?: any;
   scriptClass?: string;
+  searchIndex?: Array<{ title: string; author: string; slug: string; lang: string }>;
 }
 
-const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin' } = Astro.props;
+const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin', searchIndex } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -312,6 +313,95 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
     ::-webkit-scrollbar-track { background: var(--paper); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
+    /* SEARCH */
+    .search-container {
+      margin-top: 1.4rem;
+      display: flex;
+      justify-content: center;
+    }
+    .search-wrap {
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+    .search-wrap::before {
+      content: '\2315';
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-faint);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+    #search {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.2rem;
+      border: 1px solid var(--border);
+      background: var(--warm-white);
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.85rem;
+      color: var(--ink);
+      border-radius: 3px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    #search:focus {
+      border-color: var(--rust);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    #search::placeholder {
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 4px;
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      z-index: 100;
+      display: none;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .search-results.open { display: block; }
+    .search-result {
+      display: block;
+      padding: 0.6rem 1rem;
+      text-decoration: none;
+      color: var(--ink);
+      border-bottom: 1px solid var(--paper-dark);
+      transition: background 0.15s;
+    }
+    .search-result:last-child { border-bottom: none; }
+    .search-result:hover,
+    .search-result.focused {
+      background: var(--paper);
+    }
+    .search-result-title {
+      font-family: 'IM Fell English', serif;
+      font-size: 0.95rem;
+    }
+    .search-result-author {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: var(--ink-faint);
+      margin-top: 0.1rem;
+    }
+    .search-no-results {
+      padding: 0.8rem 1rem;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.8rem;
+      color: var(--ink-faint);
+      font-style: italic;
+    }
   </style>
 </head>
 <body class={scriptClass}>
@@ -320,6 +410,14 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
   <h1><a href="/">The dragon's lair</a></h1>
   <p class="subtitle">A personal anthology of verse</p>
   <div class="rule"><span>✦</span></div>
+  {searchIndex && (
+    <div class="search-container">
+      <div class="search-wrap">
+        <input type="text" id="search" placeholder="Search titles, authors…" autocomplete="off">
+        <div class="search-results" id="search-results"></div>
+      </div>
+    </div>
+  )}
 </div>
 
 <div class:list={['layout', { 'no-sidebar': !showSidebar }]}>
@@ -333,6 +431,86 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
     <slot />
   </main>
 </div>
+
+{searchIndex && (
+  <script type="application/json" id="search-index" set:html={JSON.stringify(searchIndex)} />
+  <script>
+    function initSearch() {
+      var indexEl = document.getElementById('search-index');
+      var input = document.getElementById('search');
+      if (!indexEl || !input || input._searchInit) return;
+      input._searchInit = true;
+
+      var index = JSON.parse(indexEl.textContent);
+      var results = document.getElementById('search-results');
+      var focused = -1;
+
+      function search(query) {
+        var q = query.toLowerCase();
+        return index.filter(function(p) {
+          return p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q);
+        }).slice(0, 8);
+      }
+
+      function render(matches) {
+        if (!matches.length) {
+          results.innerHTML = '<div class="search-no-results">No poems found</div>';
+          results.classList.add('open');
+          return;
+        }
+        results.innerHTML = matches.map(function(p, i) {
+          return '<a href="/poems/' + p.slug + '/' + p.lang + '" class="search-result' + (i === focused ? ' focused' : '') + '">' +
+            '<div class="search-result-title">' + p.title + '</div>' +
+            '<div class="search-result-author">' + p.author + '</div>' +
+          '</a>';
+        }).join('');
+        results.classList.add('open');
+      }
+
+      input.addEventListener('input', function() {
+        focused = -1;
+        if (!this.value.trim()) {
+          results.classList.remove('open');
+          results.innerHTML = '';
+          return;
+        }
+        render(search(this.value));
+      });
+
+      input.addEventListener('keydown', function(e) {
+        var items = results.querySelectorAll('.search-result');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          focused = Math.min(focused + 1, items.length - 1);
+          items.forEach(function(el, i) { el.classList.toggle('focused', i === focused); });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          focused = Math.max(focused - 1, 0);
+          items.forEach(function(el, i) { el.classList.toggle('focused', i === focused); });
+        } else if (e.key === 'Enter' && focused >= 0) {
+          e.preventDefault();
+          window.location = items[focused].href;
+        } else if (e.key === 'Escape') {
+          results.classList.remove('open');
+          input.blur();
+        }
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-wrap')) {
+          results.classList.remove('open');
+        }
+      });
+
+      input.addEventListener('focus', function() {
+        if (this.value.trim()) render(search(this.value));
+      });
+    }
+    document.addEventListener('astro:page-load', initSearch);
+  </script>
+)}
 
 </body>
 </html>

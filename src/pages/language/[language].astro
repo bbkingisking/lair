@@ -47,6 +47,11 @@ function getLanguageName(code: string): string {
 }
 
 const { poems, languageCode } = Astro.props;
+
+const allPoemsForSearch = await getCollection('poems');
+const searchIndex = allPoemsForSearch
+  .filter(p => p.data.canonical?.text)
+  .map(p => ({ title: p.data.canonical?.title || 'Untitled', author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical' }));
 const languageName = getLanguageName(languageCode);
 
 // Helper functions - find the version that matches the current language
@@ -91,7 +96,7 @@ const sortedPoems = [...poems].sort((a, b) =>
 );
 ---
 
-<LairLayout title={`${languageName} - The dragon's lair`} showSidebar={false}>
+<LairLayout title={`${languageName} - The dragon's lair`} showSidebar={false} searchIndex={searchIndex}>
   <style>
     .index-container {
       max-width: 900px;
@@ -100,55 +105,6 @@ const sortedPoems = [...poems].sort((a, b) =>
       flex-direction: column;
       align-items: center;
       width: 100%;
-    }
-
-    /* ELEVATED SEARCH */
-    .search-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-bottom: 2.5rem;
-    }
-    
-    .search-wrap {
-      width: 100%;
-      max-width: 600px;
-      position: relative;
-    }
-    
-    .search-wrap::before {
-      content: '⌕';
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--ink-faint);
-      font-size: 1.2rem;
-      pointer-events: none;
-    }
-    
-    #search {
-      width: 100%;
-      padding: 0.85rem 1rem 0.85rem 2.5rem;
-      border: 1px solid var(--border);
-      background: var(--warm-white);
-      font-family: 'Inconsolata', monospace;
-      font-size: 0.95rem;
-      color: var(--ink);
-      border-radius: 3px;
-      outline: none;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    
-    #search:focus { 
-      border-color: var(--rust);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    
-    #search::placeholder { 
-      color: var(--ink-faint); 
-      font-style: italic; 
     }
 
     /* TABBED BOX */
@@ -286,10 +242,6 @@ const sortedPoems = [...poems].sort((a, b) =>
     }
 
     @media (max-width: 768px) {
-      .search-wrap {
-        max-width: 100%;
-      }
-
       .tab-navbar {
         flex-direction: column;
       }
@@ -325,12 +277,6 @@ const sortedPoems = [...poems].sort((a, b) =>
   </style>
 
   <div class="index-container">
-    <div class="search-container">
-      <div class="search-wrap">
-        <input type="text" id="search" placeholder="Search titles, authors, lines…" autocomplete="off">
-      </div>
-    </div>
-
     <div class="tabbed-box">
       <nav class="tab-navbar">
         <a href="/" class="tab-button">By Author</a>
