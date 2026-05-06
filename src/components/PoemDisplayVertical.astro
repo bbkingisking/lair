@@ -1,0 +1,46 @@
+---
+export interface Props {
+  title?: string;
+  author?: string;
+  translator?: string;
+  language: string;
+  text: string;
+}
+
+const { title, author, translator, language, text } = Astro.props;
+
+// Prepend title and meta to the text with line breaks for vertical layout
+let displayText = text;
+if (title || author || translator) {
+  const headerParts = [];
+  if (title) headerParts.push(title);
+  if (author) headerParts.push(author);
+  if (translator) headerParts.push(`translated by ${translator}`);
+  displayText = headerParts.join('　') + '\n' + text;
+}
+---
+
+<article class="poem" lang={language}>
+  <pre class="text">{displayText}</pre>
+</article>
+
+<style>
+  .poem {
+    max-width: none;
+    display: flex;
+    justify-content: right;
+  }
+
+  .text {
+    font-family: inherit;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    white-space: pre-wrap;
+    max-inline-size: 80vh;
+    overflow-x: auto;
+    line-height: 1.8;
+    padding: 0 0.5rem;
+    text-align: left;
+    font-size: 2rem;
+  }
+</style>

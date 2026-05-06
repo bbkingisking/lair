@@ -1,0 +1,70 @@
+---
+export interface Props {
+  title?: string;
+  author?: string;
+  translator?: string;
+  language: string;
+  text: string;
+  rtl?: boolean;
+}
+
+const { title, author, translator, language, text, rtl = false } = Astro.props;
+---
+
+<article
+  class="poem"
+  lang={language}
+  dir={rtl ? 'rtl' : undefined}
+>
+  {title && <h1 class="title">{title}</h1>}
+  <div class="meta">
+    {author && <span class="author">{author}</span>}
+    {translator && <span class="translator">translated by {translator}</span>}
+  </div>
+  <pre class="text">{text}</pre>
+</article>
+
+<style>
+  .poem {
+    max-width: 40rem;
+    margin: 0 auto;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .meta {
+    font-style: italic;
+    color: #555;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .author {
+    margin-right: 0.5rem;
+  }
+
+  .translator {
+    opacity: 0.8;
+  }
+
+  .text {
+    font-family: inherit;
+    white-space: pre-wrap;
+    font-size: 1.05rem;
+    line-height: 2;
+  }
+
+  /* RTL adjustments */
+  [dir="rtl"] .meta {
+    text-align: right;
+  }
+
+  [dir="rtl"] .title {
+    text-align: right;
+  }
+</style>
