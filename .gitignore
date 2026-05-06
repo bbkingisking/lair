@@ -23,5 +23,9 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
+# fetched poetry repo
+.poetry-repo/
+src/content/poems/
+
 # AI crap
 CLAUDE.md
