@@ -5,15 +5,30 @@ export interface Props {
   available: { key: string; label: string; language: string }[];
   current: string;   // the currently active language key
   slug: string;      // poem slug
+  compareMode?: boolean;  // whether we're in compare view
+  compareSide?: 'left' | 'right';  // which side of the comparison
+  compareOtherLang?: string;  // the language on the other side
 }
 
-const { available, current, slug } = Astro.props;
+const { available, current, slug, compareMode = false, compareSide, compareOtherLang } = Astro.props;
+
+// Build the href based on mode
+const buildHref = (langKey: string) => {
+  if (compareMode && compareSide && compareOtherLang) {
+    if (compareSide === 'left') {
+      return `/poems/${slug}/compare/${langKey}+${compareOtherLang}`;
+    } else {
+      return `/poems/${slug}/compare/${compareOtherLang}+${langKey}`;
+    }
+  }
+  return `/poems/${slug}/${langKey}`;
+};
 ---
 
 <nav class="lang-switcher" aria-label="Language selector">
   {available.map(({ key, label, language }) => (
     <a
-      href={`/poems/${slug}/${key}`}
+      href={buildHref(key)}
       class:list={['lang-tab', { active: key === current }]}
       lang={language}
       data-script={getScriptClass(language)}

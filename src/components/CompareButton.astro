@@ -1,0 +1,44 @@
+---
+export interface Props {
+  slug: string;
+  currentLang: string;
+  available: { key: string; label: string; language: string }[];
+}
+
+const { slug, currentLang, available } = Astro.props;
+
+// Default to comparing current language with canonical (or first available if current is canonical)
+const otherLang = available.find(a => a.key !== currentLang)?.key || 'canonical';
+const compareUrl = `/poems/${slug}/compare/${currentLang}+${otherLang}`;
+---
+
+<div class="compare-button-wrapper">
+  <a href={compareUrl} class="compare-button">
+    Read two versions side by side
+  </a>
+</div>
+
+<style>
+  .compare-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+  }
+  
+  .compare-button {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.9rem;
+    border: 1px solid #dcd5c6;
+    border-radius: 4px;
+    background: #fdfaf3;
+    transition: all 0.2s;
+  }
+  
+  .compare-button:hover {
+    background: #ece6d9;
+    color: #1a1a1a;
+    border-color: #c4bba9;
+  }
+</style>

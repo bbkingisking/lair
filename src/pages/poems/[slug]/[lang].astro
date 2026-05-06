@@ -4,6 +4,7 @@ import Base from '../../../layouts/Base.astro';
 import { getScriptClass } from '../../../utils/language-map';
 import PoemDisplay from '../../../components/PoemDisplay.astro';
 import LanguageSwitcher from '../../../components/LanguageSwitcher.astro';
+import CompareButton from '../../../components/CompareButton.astro';
 
 export async function getStaticPaths() {
   const poems = await getCollection('poems');
@@ -44,6 +45,7 @@ const available = Object.entries(poem.data)
 ---
 
 <Base title={version.title || canonical.title || 'Untitled'} language={language} scriptClass={scriptClass} dir={dir}>
+  <CompareButton slug={poem.id} currentLang={langKey} available={available} />
   <LanguageSwitcher available={available} current={langKey} slug={poem.id} />
   <PoemDisplay
     title={version.title}

@@ -1,0 +1,120 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../../../layouts/Base.astro';
+import PoemDisplay from '../../../../components/PoemDisplay.astro';
+import LanguageSwitcher from '../../../../components/LanguageSwitcher.astro';
+import { getScriptClass } from '../../../../utils/language-map';
+
+export async function getStaticPaths() {
+  const poems = await getCollection('poems');
+  const paths = [];
+  
+  for (const poem of poems) {
+    const langKeys = Object.keys(poem.data).filter(key => poem.data[key]?.text);
+    
+    // Generate all possible pairs of languages (including same language on both sides)
+    for (let i = 0; i < langKeys.length; i++) {
+      for (let j = 0; j < langKeys.length; j++) {
+        paths.push({
+          params: { 
+            slug: poem.id, 
+            langs: `${langKeys[i]}+${langKeys[j]}` 
+          },
+          props: { poem, lang1: langKeys[i], lang2: langKeys[j] },
+        });
+      }
+    }
+  }
+  
+  return paths;
+}
+
+const { poem, lang1, lang2 } = Astro.props;
+const version1 = poem.data[lang1];
+const version2 = poem.data[lang2];
+
+if (!version1 || !version1.text || !version2 || !version2.text) {
+  return Astro.redirect('/404');
+}
+
+const canonical = poem.data.canonical;
+const language1 = version1.language || 'en';
+const language2 = version2.language || 'en';
+
+const available = Object.entries(poem.data)
+  .filter(([_, v]) => v && v.text)
+  .map(([key, v]) => ({
+    key,
+    label: v.title || key,
+    language: v.language || 'en',
+  }));
+
+const isRtl1 = version1.rtl === true;
+const isVertical1 = version1.vertical === true;
+const isRtl2 = version2.rtl === true;
+const isVertical2 = version2.vertical === true;
+---
+
+<Base title={`${version1.title || canonical.title || 'Untitled'} — Compare`} language={language1}>
+  <div class="compare-container">
+    <div class="poem-panel" dir={isRtl1 && !isVertical1 ? 'rtl' : 'ltr'}>
+      <LanguageSwitcher 
+        available={available} 
+        current={lang1} 
+        slug={poem.id}
+        compareMode={true}
+        compareSide="left"
+        compareOtherLang={lang2}
+      />
+      <PoemDisplay
+        title={version1.title}
+        author={version1.author}
+        translator={version1.translator}
+        language={language1}
+        text={version1.text}
+        rtl={isRtl1}
+        vertical={isVertical1}
+      />
+    </div>
+    
+    <div class="poem-panel" dir={isRtl2 && !isVertical2 ? 'rtl' : 'ltr'}>
+      <LanguageSwitcher 
+        available={available} 
+        current={lang2} 
+        slug={poem.id}
+        compareMode={true}
+        compareSide="right"
+        compareOtherLang={lang1}
+      />
+      <PoemDisplay
+        title={version2.title}
+        author={version2.author}
+        translator={version2.translator}
+        language={language2}
+        text={version2.text}
+        rtl={isRtl2}
+        vertical={isVertical2}
+      />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .compare-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 100%;
+  }
+  
+  .poem-panel {
+    min-width: 0;
+    overflow-x: auto;
+  }
+  
+  @media (max-width: 768px) {
+    .compare-container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
