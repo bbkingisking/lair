@@ -219,10 +219,10 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       transition: all 0.15s;
       line-height: 1.3;
     }
-    .sidebar-item:hover { 
-      background: var(--paper); 
-      border-left-color: var(--rust); 
-      color: var(--ink); 
+    .sidebar-item:hover {
+      background: var(--paper);
+      border-left-color: var(--rust);
+      color: var(--ink);
     }
     .item-title {
       display: block;
@@ -422,7 +422,7 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
 <div class="masthead">
   <h1><a href="/">The dragon's lair</a></h1>
   <div class="rule"><span>✦</span></div>
-  <p class="subtitle">A personal anthology of verse</p>
+  <p class="subtitle">A personal collection of verse</p>
   {searchIndex && (
     <img src="/logo.svg" alt="The dragon's lair" class="logo">
     <div class="search-container">
@@ -440,7 +440,7 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       <Fragment set:html={sidebarContent} />
     </nav>
   )}
-  
+
   <main class="main">
     <slot />
   </main>
