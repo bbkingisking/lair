@@ -7,6 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "optimize-fonts": "node scripts/optimize-fonts.mjs",
+    "prebuild": "npm run optimize-fonts",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
