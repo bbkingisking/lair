@@ -49,17 +49,40 @@ function getLanguageName(code: string): string {
 const { poems, languageCode } = Astro.props;
 const languageName = getLanguageName(languageCode);
 
-// Helper functions
+// Helper functions - find the version that matches the current language
+const getVersionForLanguage = (poem: any) => {
+  // First check if any version has the exact language code
+  for (const [key, value] of Object.entries(poem.data)) {
+    if (value && typeof value === 'object' && 'text' in value) {
+      const version = value as any;
+      const versionLang = version.language || key;
+      if (versionLang.split('-')[0] === languageCode) {
+        return { version, key };
+      }
+    }
+  }
+  // Fallback to canonical
+  return { version: poem.data.canonical, key: 'canonical' };
+};
+
 const getTitle = (poem: any) => {
-  return poem.data.canonical?.title || 'Untitled';
+  const { version } = getVersionForLanguage(poem);
+  return version?.title || 'Untitled';
 };
 
 const getAuthor = (poem: any) => {
-  return poem.data.canonical?.author || 'Unknown';
+  const { version } = getVersionForLanguage(poem);
+  return version?.author || 'Unknown';
 };
 
 const getLanguage = (poem: any) => {
-  return poem.data.canonical?.language || 'en';
+  const { version } = getVersionForLanguage(poem);
+  return version?.language || languageCode;
+};
+
+const getVersionKey = (poem: any) => {
+  const { key } = getVersionForLanguage(poem);
+  return key;
 };
 
 // Sort poems by title
@@ -325,8 +348,9 @@ const sortedPoems = [...poems].sort((a, b) =>
           {sortedPoems.map(poem => {
             const lang = getLanguage(poem);
             const scriptClass = getScriptClass(lang);
+            const versionKey = getVersionKey(poem);
             return (
-              <a href={`/poems/${poem.id}/canonical`} class="poem-entry">
+              <a href={`/poems/${poem.id}/${versionKey}`} class="poem-entry">
                 <div class:list={['poem-title', scriptClass]} lang={lang}>{getTitle(poem)}</div>
                 <div class="poem-meta">{getAuthor(poem)}</div>
               </a>
