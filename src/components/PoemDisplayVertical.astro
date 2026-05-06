@@ -28,7 +28,10 @@ const headerHtml = headerParts.length ? headerParts.join('　') + '\n' : '';
 ---
 
 <article class="poem" lang={language}>
-  <pre class="text" set:html={headerHtml + escapeHtml(text)} />
+  <div class="scroll">
+    {headerHtml && <pre class="header" set:html={headerHtml.trimEnd()} />}
+    <pre class="text" set:html={escapeHtml(text)} />
+  </div>
 </article>
 
 <style>
@@ -38,25 +41,44 @@ const headerHtml = headerParts.length ? headerParts.join('　') + '\n' : '';
     justify-content: right;
   }
 
+  .scroll {
+    display: flex;
+    flex-direction: column;
+    writing-mode: vertical-rl;
+    max-inline-size: 40vh;
+    overflow-x: auto;
+  }
+
+  .header {
+    font-family: inherit;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    white-space: pre-wrap;
+    line-height: 1.8;
+    padding: 0 0.5rem 2 0;
+    text-align: left;
+    font-size: 1.5rem;
+    border-left: 1px solid var(--border);
+    color: var(--ink-light);
+  }
+
   .text {
     font-family: inherit;
     writing-mode: vertical-rl;
     text-orientation: mixed;
     white-space: pre-wrap;
-    max-inline-size: 40vh;
-    overflow-x: auto;
     line-height: 1.8;
     padding: 0 0.5rem;
     text-align: left;
     font-size: 1.5rem;
   }
 
-  .text :global(.poem-author-link) {
+  .header :global(.poem-author-link) {
     color: inherit;
     text-decoration: none;
   }
 
-  .text :global(.poem-author-link:visited) {
+  .header :global(.poem-author-link:visited) {
     color: inherit;
   }
 </style>
