@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^6.2.2"
+    "astro": "^6.2.2",
+    "iso-639-3": "^3.0.1"
   }
 }

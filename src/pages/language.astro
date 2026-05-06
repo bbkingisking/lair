@@ -1,8 +1,21 @@
 ---
 import { getCollection } from 'astro:content';
 import LairLayout from '../layouts/LairLayout.astro';
+import { iso6393 } from 'iso-639-3';
 
 const allPoems = await getCollection('poems');
+
+// Normalize language code: split by '-' and take first part
+function normalizeLanguageCode(lang: string): string {
+  return lang.split('-')[0];
+}
+
+// Get language name from ISO 639-3 code
+function getLanguageName(code: string): string {
+  const normalized = normalizeLanguageCode(code);
+  const lang = iso6393.find((l: any) => l.iso6393 === normalized);
+  return lang?.name || code;
+}
 
 // Get unique languages from ALL versions (canonical + translations)
 const languageGroups = allPoems.reduce((acc: any, poem) => {
@@ -13,12 +26,13 @@ const languageGroups = allPoems.reduce((acc: any, poem) => {
     const version = poem.data[versionKey];
     if (version && typeof version === 'object' && 'text' in version) {
       const lang = version.language || versionKey;
-      if (!acc[lang]) {
-        acc[lang] = [];
+      const normalizedLang = normalizeLanguageCode(lang);
+      if (!acc[normalizedLang]) {
+        acc[normalizedLang] = [];
       }
       // Only add if not already in array (to avoid duplicates)
-      if (!acc[lang].some((p: any) => p.id === poem.id)) {
-        acc[lang].push(poem);
+      if (!acc[normalizedLang].some((p: any) => p.id === poem.id)) {
+        acc[normalizedLang].push(poem);
       }
     }
   });
@@ -26,7 +40,10 @@ const languageGroups = allPoems.reduce((acc: any, poem) => {
   return acc;
 }, {});
 
-const uniqueLanguages = Object.keys(languageGroups).sort();
+// Sort languages by poem count (descending)
+const uniqueLanguages = Object.keys(languageGroups).sort((a, b) => 
+  languageGroups[b].length - languageGroups[a].length
+);
 ---
 
 <LairLayout title="The dragon's lair" showSidebar={false}>
@@ -238,7 +255,7 @@ const uniqueLanguages = Object.keys(languageGroups).sort();
         <div class="categories-grid">
           {uniqueLanguages.map(lang => (
             <a href={`/language/${encodeURIComponent(lang)}`} class="category-item">
-              <div class="category-name">{lang}</div>
+              <div class="category-name">{getLanguageName(lang)}</div>
               <div class="category-count">{languageGroups[lang].length} {languageGroups[lang].length === 1 ? 'poem' : 'poems'}</div>
             </a>
           ))}

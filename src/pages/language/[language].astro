@@ -2,8 +2,14 @@
 import { getCollection } from 'astro:content';
 import LairLayout from '../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../utils/language-map';
+import { iso6393 } from 'iso-639-3';
 
 export async function getStaticPaths() {
+  // Normalize language code: split by '-' and take first part
+  function normalizeLanguageCode(lang: string): string {
+    return lang.split('-')[0];
+  }
+
   const allPoems = await getCollection('poems');
   
   // Get unique languages from ALL versions
@@ -14,11 +20,12 @@ export async function getStaticPaths() {
       const version = poem.data[versionKey];
       if (version && typeof version === 'object' && 'text' in version) {
         const lang = version.language || versionKey;
-        if (!acc[lang]) {
-          acc[lang] = [];
+        const normalizedLang = normalizeLanguageCode(lang);
+        if (!acc[normalizedLang]) {
+          acc[normalizedLang] = [];
         }
-        if (!acc[lang].some((p: any) => p.id === poem.id)) {
-          acc[lang].push(poem);
+        if (!acc[normalizedLang].some((p: any) => p.id === poem.id)) {
+          acc[normalizedLang].push(poem);
         }
       }
     });
@@ -28,11 +35,19 @@ export async function getStaticPaths() {
 
   return Object.keys(languageGroups).map(lang => ({
     params: { language: lang },
-    props: { poems: languageGroups[lang], languageName: lang }
+    props: { poems: languageGroups[lang], languageCode: lang }
   }));
 }
 
-const { poems, languageName } = Astro.props;
+// Get language name from ISO 639-3 code
+function getLanguageName(code: string): string {
+  const normalized = code.split('-')[0];
+  const lang = iso6393.find((l: any) => l.iso6393 === normalized);
+  return lang?.name || code;
+}
+
+const { poems, languageCode } = Astro.props;
+const languageName = getLanguageName(languageCode);
 
 // Helper functions
 const getTitle = (poem: any) => {
