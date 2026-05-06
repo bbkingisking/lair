@@ -109,14 +109,6 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       position: relative;
       background: linear-gradient(to bottom, var(--warm-white), transparent);
     }
-    .masthead::before {
-      content: '❧';
-      display: block;
-      font-size: 1.4rem;
-      color: var(--rust);
-      margin-bottom: 0.5rem;
-      opacity: 0.7;
-    }
     .masthead h1 {
       font-family: 'IM Fell English', serif;
       font-size: clamp(2.4rem, 5vw, 4rem);
@@ -140,6 +132,14 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       font-size: 0.9rem;
       margin-top: 0.4rem;
       letter-spacing: 0.05em;
+    }
+    .masthead .logo {
+      width: 180px;
+      height: auto;
+      margin-top: 1.5rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
     .masthead .rule {
       display: flex;
@@ -421,9 +421,10 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
 
 <div class="masthead">
   <h1><a href="/">The dragon's lair</a></h1>
-  <p class="subtitle">A personal anthology of verse</p>
   <div class="rule"><span>✦</span></div>
+  <p class="subtitle">A personal anthology of verse</p>
   {searchIndex && (
+    <img src="/logo.svg" alt="The dragon's lair" class="logo">
     <div class="search-container">
       <div class="search-wrap">
         <input type="text" id="search" placeholder="Search titles, authors…" autocomplete="off">
