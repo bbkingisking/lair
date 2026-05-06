@@ -11,9 +11,10 @@ export interface Props {
   sourceUrl?: string;  // GitHub source link
   webUrl?: string;     // version-specific source URL
   isbnUrl?: string;    // version-specific ISBN link
+  compareToggle?: boolean;  // show side-by-side toggle in source icons
 }
 
-const { available, current, slug, compareMode = false, compareSide, compareOtherLang, sourceUrl, webUrl, isbnUrl } = Astro.props;
+const { available, current, slug, compareMode = false, compareSide, compareOtherLang, sourceUrl, webUrl, isbnUrl, compareToggle = false } = Astro.props;
 
 // Build the href based on mode
 const buildHref = (langKey: string) => {
@@ -39,8 +40,13 @@ const buildHref = (langKey: string) => {
       {label}
     </a>
   ))}
-  {(isbnUrl || webUrl || sourceUrl) && (
+  {(isbnUrl || webUrl || sourceUrl || compareToggle) && (
     <span class="source-icons">
+      {compareToggle && (
+        <a href={`/poems/${slug}/${current}`} class="source-link" title="Single view">
+          <img src="/side-by-side.svg" alt="Single view" width="16" height="16" />
+        </a>
+      )}
       {isbnUrl && (
         <a href={isbnUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View on Open Library">
           <img src="/isbn.svg" alt="ISBN" width="16" height="16" />
@@ -63,33 +69,35 @@ const buildHref = (langKey: string) => {
 <style>
   .lang-switcher {
     display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
     flex-wrap: wrap;
-    gap: 0.25rem;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #dcd5c6;
-    padding-bottom: 0.4rem;
   }
 
   .lang-tab {
-    padding: 0.3rem 0.8rem;
+    padding: 0.5rem 1rem;
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    background: none;
+    color: var(--ink-faint);
     text-decoration: none;
-    color: #555;
-    font-size: 0.9rem;
-    border-radius: 4px 4px 0 0;
-    transition: background 0.2s;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
   }
 
   .lang-tab:hover {
-    background: #ece6d9;
-    color: #1a1a1a;
+    color: var(--ink);
   }
 
   .lang-tab.active {
-    background: #fdfaf3;
-    color: #1a1a1a;
-    font-weight: bold;
-    border: 1px solid #dcd5c6;
-    border-bottom-color: transparent;
+    color: var(--rust);
+    border-bottom-color: var(--rust);
   }
 
   .source-icons {

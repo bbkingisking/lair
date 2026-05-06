@@ -52,6 +52,9 @@ const available = Object.entries(poem.data)
     language: v.language || 'en',
   }));
 
+const otherLang = available.find(a => a.key !== langKey)?.key;
+const compareUrl = otherLang ? `/poems/${poem.id}/compare/${langKey}+${otherLang}` : undefined;
+
 const LANG_NAMES: Record<string, string> = {
   eng: 'English',
   en: 'English',
@@ -98,6 +101,7 @@ const formatVersionLabel = (key: string, lang?: string) => {
       margin-bottom: 1.5rem;
       border-bottom: 2px solid var(--border);
       flex-wrap: wrap;
+      position: relative;
     }
     
     .version-tab {
@@ -123,6 +127,12 @@ const formatVersionLabel = (key: string, lang?: string) => {
     .version-tab.active {
       color: var(--rust);
       border-bottom-color: var(--rust);
+    }
+
+    .compare-toggle {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .source-icons {
@@ -161,6 +171,11 @@ const formatVersionLabel = (key: string, lang?: string) => {
         {formatVersionLabel(key, versionLang)}
       </a>
     ))}
+    {compareUrl && (
+      <a href={compareUrl} class="source-link compare-toggle" title="Side by side">
+        <img src="/side-by-side.svg" alt="Side by side" width="16" height="16" />
+      </a>
+    )}
     {(isbnUrl || webUrl || sourceUrl) && (
       <span class="source-icons">
         {isbnUrl && (

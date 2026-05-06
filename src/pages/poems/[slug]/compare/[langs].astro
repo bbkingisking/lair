@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import Base from '../../../../layouts/Base.astro';
+import LairLayout from '../../../../layouts/LairLayout.astro';
 import PoemDisplay from '../../../../components/PoemDisplay.astro';
 import LanguageSwitcher from '../../../../components/LanguageSwitcher.astro';
 import { getScriptClass } from '../../../../utils/language-map';
@@ -51,22 +51,58 @@ if (!version1 || !version1.text || !version2 || !version2.text) {
 const canonical = poem.data.canonical;
 const language1 = version1.language || 'en';
 const language2 = version2.language || 'en';
-
-const available = Object.entries(poem.data)
-  .filter(([_, v]) => v && v.text)
-  .map(([key, v]) => ({
-    key,
-    label: v.title || key,
-    language: v.language || 'en',
-  }));
+const scriptClass = getScriptClass(language1);
 
 const isRtl1 = version1.rtl === true;
 const isVertical1 = version1.vertical === true;
 const isRtl2 = version2.rtl === true;
 const isVertical2 = version2.vertical === true;
+
+const LANG_NAMES: Record<string, string> = {
+  eng: 'English',
+  en: 'English',
+  bul: 'Bulgarian',
+  fra: 'French',
+  jpn: 'Japanese',
+  lzh: 'Classical Chinese',
+  kor: 'Korean',
+  rus: 'Russian',
+  fas: 'Persian',
+  okm: 'Middle Korean',
+  'zho-Hans': 'Chinese',
+  deu: 'German',
+  ita: 'Italian'
+};
+
+const formatVersionLabel = (key: string, lang?: string) => {
+  const labels: Record<string, string> = {
+    canonical: 'Translation',
+    original: 'Original',
+    lzh: 'Classical Chinese',
+    lzh_formatted: 'Classical Chinese (formatted)',
+    korean: 'Korean',
+    modern_korean: 'Modern Korean',
+    middle_korean: 'Middle Korean',
+    modern_chinese: 'Modern Chinese',
+    hanja_eum: 'Hanja Reading',
+    translation: 'Alt. Translation'
+  };
+  if (key === 'canonical' && lang) {
+    return LANG_NAMES[lang] || lang.toUpperCase();
+  }
+  return labels[key] || key;
+};
+
+const available = Object.entries(poem.data)
+  .filter(([_, v]) => v && v.text)
+  .map(([key, v]) => ({
+    key,
+    label: formatVersionLabel(key, v.language),
+    language: v.language || 'en',
+  }));
 ---
 
-<Base title={`${version1.title || canonical.title || 'Untitled'} — Compare`} language={language1}>
+<LairLayout title={`${version1.title || canonical.title || 'Untitled'} — Compare`} {scriptClass}>
   <div class="compare-container">
     <div class="poem-panel" dir={isRtl1 && !isVertical1 ? 'rtl' : 'ltr'}>
       <LanguageSwitcher
@@ -76,7 +112,6 @@ const isVertical2 = version2.vertical === true;
         compareMode={true}
         compareSide="left"
         compareOtherLang={lang2}
-        sourceUrl={sourceUrl}
         webUrl={webUrl1}
         isbnUrl={isbnUrl1}
       />
@@ -102,6 +137,7 @@ const isVertical2 = version2.vertical === true;
         sourceUrl={sourceUrl}
         webUrl={webUrl2}
         isbnUrl={isbnUrl2}
+        compareToggle={true}
       />
       <PoemDisplay
         title={version2.title}
@@ -114,7 +150,7 @@ const isVertical2 = version2.vertical === true;
       />
     </div>
   </div>
-</Base>
+</LairLayout>
 
 <style>
   .compare-container {
