@@ -4,6 +4,7 @@ import LairLayout from '../../../../layouts/LairLayout.astro';
 import PoemDisplay from '../../../../components/PoemDisplay.astro';
 import LanguageSwitcher from '../../../../components/LanguageSwitcher.astro';
 import { getScriptClass } from '../../../../utils/language-map';
+import { authorToSlug } from '../../../../utils/author-slug';
 
 export async function getStaticPaths() {
   const poems = await getCollection('poems');
@@ -52,6 +53,7 @@ const canonical = poem.data.canonical;
 const language1 = version1.language || 'en';
 const language2 = version2.language || 'en';
 const scriptClass = getScriptClass(language1);
+const authorSlug = canonical.author ? authorToSlug(canonical.author) : undefined;
 
 const isRtl1 = version1.rtl === true;
 const isVertical1 = version1.vertical === true;
@@ -118,6 +120,7 @@ const available = Object.entries(poem.data)
       <PoemDisplay
         title={version1.title}
         author={version1.author}
+        authorSlug={authorSlug}
         translator={version1.translator}
         language={language1}
         text={version1.text}
@@ -142,6 +145,7 @@ const available = Object.entries(poem.data)
       <PoemDisplay
         title={version2.title}
         author={version2.author}
+        authorSlug={authorSlug}
         translator={version2.translator}
         language={language2}
         text={version2.text}

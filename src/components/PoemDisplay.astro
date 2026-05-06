@@ -5,6 +5,7 @@ import PoemDisplayVertical from './PoemDisplayVertical.astro';
 export interface Props {
   title?: string;
   author?: string;
+  authorSlug?: string;
   translator?: string;
   language: string;
   text: string;
@@ -12,13 +13,14 @@ export interface Props {
   vertical?: boolean;
 }
 
-const { title, author, translator, language, text, rtl = false, vertical = false } = Astro.props;
+const { title, author, authorSlug, translator, language, text, rtl = false, vertical = false } = Astro.props;
 ---
 
 {vertical ? (
   <PoemDisplayVertical
     title={title}
     author={author}
+    authorSlug={authorSlug}
     translator={translator}
     language={language}
     text={text}
@@ -27,6 +29,7 @@ const { title, author, translator, language, text, rtl = false, vertical = false
   <PoemDisplayHorizontal
     title={title}
     author={author}
+    authorSlug={authorSlug}
     translator={translator}
     language={language}
     text={text}

@@ -2,26 +2,33 @@
 export interface Props {
   title?: string;
   author?: string;
+  authorSlug?: string;
   translator?: string;
   language: string;
   text: string;
 }
 
-const { title, author, translator, language, text } = Astro.props;
+const { title, author, authorSlug, translator, language, text } = Astro.props;
 
-// Prepend title and meta to the text with line breaks for vertical layout
-let displayText = text;
-if (title || author || translator) {
-  const headerParts = [];
-  if (title) headerParts.push(title);
-  if (author) headerParts.push(author);
-  if (translator) headerParts.push(`translated by ${translator}`);
-  displayText = headerParts.join('　') + '\n' + text;
+// Build header as HTML string for embedding in <pre>
+function escapeHtml(s: string) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
+const headerParts: string[] = [];
+if (title) headerParts.push(escapeHtml(title));
+if (author) {
+  headerParts.push(authorSlug
+    ? `<a class="poem-author-link" href="/author/${authorSlug}">${escapeHtml(author)}</a>`
+    : escapeHtml(author)
+  );
+}
+if (translator) headerParts.push(`translated by ${escapeHtml(translator)}`);
+const headerHtml = headerParts.length ? headerParts.join('　') + '\n' : '';
 ---
 
 <article class="poem" lang={language}>
-  <pre class="text">{displayText}</pre>
+  <pre class="text" set:html={headerHtml + escapeHtml(text)} />
 </article>
 
 <style>
@@ -42,5 +49,14 @@ if (title || author || translator) {
     padding: 0 0.5rem;
     text-align: left;
     font-size: 1.5rem;
+  }
+
+  .text :global(.poem-author-link) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .text :global(.poem-author-link:visited) {
+    color: inherit;
   }
 </style>

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import LairLayout from '../layouts/LairLayout.astro';
 import { getScriptClass } from '../utils/language-map';
+import { authorToSlug } from '../utils/author-slug';
 
 const allPoems = await getCollection('poems');
 
@@ -271,7 +272,7 @@ const searchIndex = allPoems.flatMap(p => {
       <div class="tab-content">
         <div class="categories-grid">
           {uniqueAuthors.map(author => (
-            <a href={`/author/${author.toLowerCase().replace(/\s+/g, '-')}`} class="category-item">
+            <a href={`/author/${authorToSlug(author)}`} class="category-item">
               <div class="category-name">{author}</div>
               <div class="category-count">{authorGroups[author].length} {authorGroups[author].length === 1 ? 'poem' : 'poems'}</div>
             </a>

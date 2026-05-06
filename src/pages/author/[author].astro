@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import LairLayout from '../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../utils/language-map';
+import { authorToSlug } from '../../utils/author-slug';
 
 export async function getStaticPaths() {
   const allPoems = await getCollection('poems');
@@ -17,7 +18,7 @@ export async function getStaticPaths() {
   }, {});
 
   return Object.keys(authorGroups).map(author => ({
-    params: { author: author.toLowerCase().replace(/\s+/g, '-') },
+    params: { author: authorToSlug(author) },
     props: { poems: authorGroups[author], authorName: author }
   }));
 }
