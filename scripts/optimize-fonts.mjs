@@ -22,7 +22,7 @@ const OUT_DIR = join(ROOT, 'public/fonts');
 // --- Step 1: collect all characters used in poems ---
 
 function extractChars() {
-  const files = readdirSync(POEMS_DIR).filter(f => f.endsWith('.yaml'));
+  const files = readdirSync(POEMS_DIR).filter(f => f.endsWith('.poem'));
   const chars = new Set();
 
   for (const file of files) {
