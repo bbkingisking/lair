@@ -1,6 +1,7 @@
 ---
 canonical:
   author: Cecco Angiolieri
+  language: eng
   text: |
     My melancholy mood has grown so great
     That now I really think that if my foe,
@@ -18,6 +19,7 @@ canonical:
     Accursed be Love who led me to these snares.
 original:
   author: Cecco Angiolieri
+  language: ita
   text: |2
       La mia malinconia è tanta e tale,
     ch’i’non discredo che, s’egli ’l sapesse

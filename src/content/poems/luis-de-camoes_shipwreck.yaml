@@ -2,6 +2,7 @@
 canonical:
   title: Shipwreck
   author: Luís de Camões
+  language: eng
   text: |
     Like the weary sailor, the refugee
     from wreck and storm, who escapes half-dead,
@@ -20,6 +21,7 @@ canonical:
 original:
   title: Shipwreck
   author: Luís de Camões
+  language: por
   text: |
     Como quando do mar tempestuoso
     o marinheiro, lasso e trabalhado,

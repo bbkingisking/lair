@@ -5,8 +5,6 @@ import { getScriptClass } from '../utils/language-map';
 
 const allPoems = await getCollection('poems');
 
-
-
 // Helper to get title from a poem
 const getTitle = (poem: any) => {
   return poem.data.canonical?.title || 'Untitled';
@@ -21,42 +19,6 @@ const getAuthor = (poem: any) => {
 const getLanguage = (poem: any) => {
   return poem.data.canonical?.language || 'en';
 };
-
-// Get unique authors with poem counts
-const authorGroups = allPoems.reduce((acc: any, poem) => {
-  const author = getAuthor(poem);
-  if (!acc[author]) {
-    acc[author] = [];
-  }
-  acc[author].push(poem);
-  return acc;
-}, {});
-
-const uniqueAuthors = Object.keys(authorGroups).sort();
-
-// Get unique languages from ALL versions (canonical + translations)
-const languageGroups = allPoems.reduce((acc: any, poem) => {
-  // Get all keys from poem.data
-  const allVersions = Object.keys(poem.data);
-  
-  allVersions.forEach(versionKey => {
-    const version = poem.data[versionKey];
-    if (version && typeof version === 'object' && 'text' in version) {
-      const lang = version.language || versionKey;
-      if (!acc[lang]) {
-        acc[lang] = [];
-      }
-      // Only add if not already in array (to avoid duplicates)
-      if (!acc[lang].some((p: any) => p.id === poem.id)) {
-        acc[lang].push(poem);
-      }
-    }
-  });
-  
-  return acc;
-}, {});
-
-const uniqueLanguages = Object.keys(languageGroups).sort();
 
 // Get all poems sorted by title
 const poemsByTitle = [...allPoems].sort((a, b) => {
@@ -154,7 +116,6 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--ink-light);
-      cursor: pointer;
       transition: all 0.2s;
       border-bottom: 3px solid transparent;
       position: relative;
@@ -182,48 +143,7 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       min-height: 0;
     }
 
-    /* CATEGORIES VIEW */
-    .categories-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .category-item {
-      padding: 1rem 1.5rem;
-      background: var(--paper);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      transition: all 0.2s;
-      text-align: center;
-      text-decoration: none;
-      color: var(--ink);
-      display: block;
-    }
-
-    .category-item:hover {
-      background: var(--warm-white);
-      border-color: var(--rust);
-      transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .category-name {
-      font-family: 'IM Fell English', serif;
-      font-size: 1.1rem;
-      color: var(--ink);
-      margin-bottom: 0.3rem;
-    }
-
-    .category-count {
-      font-family: 'Inconsolata', monospace;
-      font-size: 0.75rem;
-      color: var(--ink-faint);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* POEMS LIST VIEW */
+    /* POEMS LIST */
     .poems-list {
       display: flex;
       flex-direction: column;
@@ -286,10 +206,6 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
         padding: 1.5rem;
       }
 
-      .categories-grid {
-        grid-template-columns: 1fr;
-      }
-
       .tabbed-box {
         max-height: 90vh;
       }
@@ -305,19 +221,23 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
 
     <div class="tabbed-box">
       <nav class="tab-navbar">
-        <a href="/" class="tab-button active">By Author</a>
-        <a href="/title" class="tab-button">By Title</a>
+        <a href="/" class="tab-button">By Author</a>
+        <a href="/title" class="tab-button active">By Title</a>
         <a href="/language" class="tab-button">By Language</a>
       </nav>
 
       <div class="tab-content">
-        <div class="categories-grid">
-          {uniqueAuthors.map(author => (
-            <a href={`/author/${encodeURIComponent(author)}`} class="category-item">
-              <div class="category-name">{author}</div>
-              <div class="category-count">{authorGroups[author].length} {authorGroups[author].length === 1 ? 'poem' : 'poems'}</div>
-            </a>
-          ))}
+        <div class="poems-list">
+          {poemsByTitle.map(poem => {
+            const lang = getLanguage(poem);
+            const scriptClass = getScriptClass(lang);
+            return (
+              <a href={`/poems/${poem.id}/canonical`} class="poem-entry">
+                <div class:list={['poem-title', scriptClass]} lang={lang}>{getTitle(poem)}</div>
+                <div class="poem-meta">{getAuthor(poem)}</div>
+              </a>
+            );
+          })}
         </div>
       </div>
     </div>

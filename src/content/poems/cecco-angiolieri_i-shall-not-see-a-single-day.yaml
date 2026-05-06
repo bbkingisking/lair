@@ -1,6 +1,7 @@
 ---
 canonical:
   author: Cecco Angiolieri
+  language: eng
   text: |
     I shall not see a single day that’s fine
     Till Rome lies buried under August snows;
@@ -18,6 +19,7 @@ canonical:
     She’s even sorry that I fare no worse.
 original:
   author: Cecco Angiolieri
+  language: ita
   text: |2
       Io averò quell’ora un sol di bene,
     ch’a Roma metterá neve d’agosto:

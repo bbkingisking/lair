@@ -4,7 +4,7 @@ canonical:
   author: King Hyo-Jong
   language: eng
   translator: Chung Seuk Park
-  source: 0030120713
+  source: "0030120713"
   text: |
     What is so amusing about the rain falling
     In the clear stream
@@ -15,6 +15,7 @@ canonical:
     For they have only a few days to enjoy the spring wind.
 original:
   title: 淸江에 비 듣는 소리 긔 무엇이 우읍관대
+  language: okm
   author: 봉림대군
   text: |
     淸江에 비 듣는 소리 긔 무엇이 우읍관대
@@ -22,6 +23,7 @@ original:
     두어라 春風이 몇 날이리 우을대로 우어라
 korean:
   title: 청강에 비 듯는 소리
+  language: kor
   author: 봉림대군
   text: |
     청강에 비 듣는 소리 긔 무엇이 우읍관대

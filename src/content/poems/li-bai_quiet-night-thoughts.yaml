@@ -2,6 +2,7 @@
 canonical:
   title: Quiet Night Thoughts
   author: Li Bai
+  language: eng
   text: |
     Bright moonlight before my bed;
     I suppose it is frost on the ground.
@@ -10,6 +11,7 @@ canonical:
 original:
   title: 靜夜思
   author: 李白
+  language: zho
   text: |
     床前明月光
     疑是地上霜

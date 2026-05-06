@@ -2,6 +2,7 @@
 canonical:
   title: Azaleas
   author: Kim So-wol
+  language: eng
   translator: McKenzie Johns
   text: |
     When seeing me sickens you
@@ -22,6 +23,7 @@ canonical:
 original:
   title: 진달래꽃
   author: 김소월
+  language: kor
   text:
     나 보기가 역겨워
     가실 때에는

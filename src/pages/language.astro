@@ -1,38 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import LairLayout from '../layouts/LairLayout.astro';
-import { getScriptClass } from '../utils/language-map';
 
 const allPoems = await getCollection('poems');
-
-
-
-// Helper to get title from a poem
-const getTitle = (poem: any) => {
-  return poem.data.canonical?.title || 'Untitled';
-};
-
-// Helper to get author from a poem
-const getAuthor = (poem: any) => {
-  return poem.data.canonical?.author || 'Unknown';
-};
-
-// Helper to get language from a poem
-const getLanguage = (poem: any) => {
-  return poem.data.canonical?.language || 'en';
-};
-
-// Get unique authors with poem counts
-const authorGroups = allPoems.reduce((acc: any, poem) => {
-  const author = getAuthor(poem);
-  if (!acc[author]) {
-    acc[author] = [];
-  }
-  acc[author].push(poem);
-  return acc;
-}, {});
-
-const uniqueAuthors = Object.keys(authorGroups).sort();
 
 // Get unique languages from ALL versions (canonical + translations)
 const languageGroups = allPoems.reduce((acc: any, poem) => {
@@ -57,11 +27,6 @@ const languageGroups = allPoems.reduce((acc: any, poem) => {
 }, {});
 
 const uniqueLanguages = Object.keys(languageGroups).sort();
-
-// Get all poems sorted by title
-const poemsByTitle = [...allPoems].sort((a, b) => {
-  return getTitle(a).localeCompare(getTitle(b));
-});
 ---
 
 <LairLayout title="The dragon's lair" showSidebar={false}>
@@ -154,7 +119,6 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--ink-light);
-      cursor: pointer;
       transition: all 0.2s;
       border-bottom: 3px solid transparent;
       position: relative;
@@ -223,46 +187,6 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
       letter-spacing: 0.05em;
     }
 
-    /* POEMS LIST VIEW */
-    .poems-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .poem-entry {
-      text-decoration: none;
-      color: var(--ink);
-      display: block;
-      padding: 0 0 1.5rem 0;
-      border-bottom: 1px solid var(--paper-dark);
-      transition: all 0.2s;
-    }
-
-    .poem-entry:last-child {
-      border-bottom: none;
-    }
-
-    .poem-entry:hover .poem-title {
-      color: var(--rust);
-    }
-
-    .poem-title {
-      font-family: 'IM Fell English', serif;
-      font-size: 1.3rem;
-      font-weight: 400;
-      margin-bottom: 0.3rem;
-      color: var(--ink);
-      line-height: 1.3;
-      transition: color 0.2s;
-    }
-
-    .poem-meta {
-      font-size: 0.8rem;
-      font-style: italic;
-      color: var(--ink-light);
-    }
-
     @media (max-width: 768px) {
       .search-wrap {
         max-width: 100%;
@@ -305,17 +229,17 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
 
     <div class="tabbed-box">
       <nav class="tab-navbar">
-        <a href="/" class="tab-button active">By Author</a>
+        <a href="/" class="tab-button">By Author</a>
         <a href="/title" class="tab-button">By Title</a>
-        <a href="/language" class="tab-button">By Language</a>
+        <a href="/language" class="tab-button active">By Language</a>
       </nav>
 
       <div class="tab-content">
         <div class="categories-grid">
-          {uniqueAuthors.map(author => (
-            <a href={`/author/${encodeURIComponent(author)}`} class="category-item">
-              <div class="category-name">{author}</div>
-              <div class="category-count">{authorGroups[author].length} {authorGroups[author].length === 1 ? 'poem' : 'poems'}</div>
+          {uniqueLanguages.map(lang => (
+            <a href={`/language/${encodeURIComponent(lang)}`} class="category-item">
+              <div class="category-name">{lang}</div>
+              <div class="category-count">{languageGroups[lang].length} {languageGroups[lang].length === 1 ? 'poem' : 'poems'}</div>
             </a>
           ))}
         </div>

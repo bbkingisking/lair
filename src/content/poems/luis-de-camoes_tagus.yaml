@@ -2,6 +2,7 @@
 canonical:
   title: Tagus
   author: Luís de Camões
+  language: eng
   text: |
     Gentle waters of the Tagus, you flow
     across the fields, nourishing the herds,
@@ -20,6 +21,7 @@ canonical:
 original:
   title: Tagus
   author: Luís de Camões
+  language: por
   text: |
     Brandas águas do Tejo que, passando
     por estes verdes campos que regais,

@@ -1,6 +1,7 @@
 ---
 canonical:
   author: Cecco Angiolieri
+  language: eng
   text: |
     With my Becchina, I have such small grace
     That by God’s faith—and He does not deceive—
@@ -17,6 +18,7 @@ canonical:
     I’d live, who now to bitter death aspire.
 original:
   author: Cecco Angiolieri
+  language: ita
   text: |2
       I’ ho sì poco di grazia ’n Becchina,
     in fé di Di’, ch’anche non tèn a frodo,

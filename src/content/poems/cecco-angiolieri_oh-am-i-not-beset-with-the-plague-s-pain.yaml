@@ -1,6 +1,7 @@
 ---
 canonical:
   author: Cecco Angiolieri
+  language: eng
   text: |
     Oh, am I not beset with the plague’s pain
     Since I cannot give over loving one
@@ -18,6 +19,7 @@ canonical:
     All potent, he can do so if he will.
 original:
   author: Cecco Angiolieri
+  language: ita
   text: |2
       Or non è gran pistolenza la mia,
     ch’i’ non mi posso partir dad amare

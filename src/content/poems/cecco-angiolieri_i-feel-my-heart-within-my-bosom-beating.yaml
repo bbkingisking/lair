@@ -1,6 +1,7 @@
 ---
 canonical:
   author: Cecco Angiolieri
+  language: eng
   text: |
     I feel my heart within my bosom beating,
     So strong within me is the dread and fear,
@@ -18,6 +19,7 @@ canonical:
     And now and then, it’s true, I tumble down.
 original:
   author: Cecco Angiolieri
+  language: ita
   text: |2
       Il cuore in corpo mi sento tremare,
     si fort’è la temenza e la paura,

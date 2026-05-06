@@ -3,6 +3,7 @@ canonical:
   title: Snow
   translator: Chae-Pyong Song & Anne Rashid
   author: Yun Dong-Ju
+  language: eng
   text: |
     Last night
     snow fell abundantly:
@@ -17,6 +18,7 @@ canonical:
 original:
   title: 눈
   author: 윤동주
+  language: kor
   text: |
     지난 밤에
     눈이 소오복이 왔네

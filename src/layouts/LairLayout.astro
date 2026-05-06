@@ -103,10 +103,9 @@ const { title, showSidebar = false, sidebarContent } = Astro.props;
     /* MASTHEAD */
     .masthead {
       text-align: center;
-      padding: 3rem 2rem 2rem;
-      border-bottom: 2px solid var(--ink);
+      padding: 3rem 2rem 2.5rem;
       position: relative;
-      background: var(--warm-white);
+      background: linear-gradient(to bottom, var(--warm-white), transparent);
     }
     .masthead::before {
       content: '❧';
@@ -145,6 +144,7 @@ const { title, showSidebar = false, sidebarContent } = Astro.props;
       gap: 1rem;
       margin: 1.2rem auto 0;
       max-width: 400px;
+      opacity: 0.5;
     }
     .masthead .rule::before,
     .masthead .rule::after {
@@ -236,6 +236,11 @@ const { title, showSidebar = false, sidebarContent } = Astro.props;
     .main {
       padding: 2.5rem 3rem 4rem;
       max-width: 900px;
+    }
+
+    .layout.no-sidebar .main {
+      margin: 0 auto;
+      width: 100%;
     }
 
     @media (max-width: 768px) {
