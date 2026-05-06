@@ -5,9 +5,10 @@ export interface Props {
   title: string;
   showSidebar?: boolean;
   sidebarContent?: any;
+  scriptClass?: string;
 }
 
-const { title, showSidebar = false, sidebarContent } = Astro.props;
+const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin' } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -264,7 +265,7 @@ const { title, showSidebar = false, sidebarContent } = Astro.props;
     ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
   </style>
 </head>
-<body>
+<body class={scriptClass}>
 
 <div class="masthead">
   <h1><a href="/">The dragon's lair</a></h1>
