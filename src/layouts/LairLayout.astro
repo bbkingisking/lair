@@ -69,10 +69,18 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       font-style: normal;
     }
 
+    /* Korean (Middle Korean glyphs support) */
+    @font-face {
+      font-family: 'NotoSansCJKkr';
+      src: url('/fonts/NotoSansCJKkr-Regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
     .script-latin   { font-family: 'IMFellEnglish', serif; }
     .script-cyrillic { font-family: 'Marxiana', serif; }
     .script-hanzi   { font-family: 'ZhuqueFangsong', serif; }
-    .script-hangul  { font-family: 'AGChoiJeongHo', serif; }
+    .script-hangul  { font-family: 'AGChoiJeongHo', 'NotoSansCJKkr', serif; }
     .script-arabic  { font-family: serif; }
     .script-japanese { font-family: serif; }
 

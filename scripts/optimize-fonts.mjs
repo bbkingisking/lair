@@ -68,6 +68,7 @@ const FONTS = [
   // CJK/Hangul — subset to used chars
   { file: 'ZhuqueFangsong-Regular.ttf', subset: true },
   { file: 'AGChoiJeongHoStd.otf', subset: true },
+  { file: 'NotoSansCJKkr-Regular.otf', subset: true },
   // Latin/Cyrillic — just convert to WOFF2, no subsetting needed
   { file: 'IMFellEnglish-Regular.ttf', subset: false },
   { file: 'IMFellEnglish-Italic.ttf', subset: false },

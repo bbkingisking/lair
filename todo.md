@@ -1,0 +1,3 @@
+- [x] Add a font to support Middle Korean glyphs and apply it to okm versions
+- [ ] Don't show split view button on mobile
+- [ ] Use Marxiana for Cyrillic names and titles in tab view
