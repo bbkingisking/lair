@@ -416,6 +416,22 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
     .search-section-header:not(:first-child) {
       border-top: 1px solid var(--border);
     }
+    .rumi-quote {
+      font-family: 'IMFellEnglish', 'IM Fell English', serif;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+    .rumi-quote a {
+      color: var(--ink-light);
+      text-decoration: underline;
+      text-decoration-color: var(--ink-faint);
+    }
+    .rumi-quote a:hover {
+      color: var(--rust);
+      text-decoration-color: var(--rust);
+    }
   </style>
 </head>
 <body class={scriptClass}>
@@ -432,6 +448,7 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
         <div class="search-results" id="search-results"></div>
       </div>
     </div>
+    <p class="rumi-quote"><em>The Beauty you seek is inside of you. — <a href="/poems/rumi_rubai-1498/canonical">Rumi</a></em></p>
   )}
 </div>
 
