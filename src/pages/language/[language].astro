@@ -278,7 +278,7 @@ const sortedPoems = [...poems].sort((a, b) =>
 
   <div class="index-container">
     <div class="tabbed-box">
-      <nav class="tab-navbar">
+      <nav class="tab-navbar" id="content">
         <a href="/" class="tab-button">By Author</a>
         <a href="/title" class="tab-button">By Title</a>
         <a href="/language" class="tab-button active">By Language</a>
@@ -306,4 +306,10 @@ const sortedPoems = [...poems].sort((a, b) =>
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      document.getElementById('content')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    });
+  </script>
 </LairLayout>

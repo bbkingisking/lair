@@ -284,7 +284,7 @@ const searchIndex = allPoems.flatMap(p => {
 
   <script>
     document.addEventListener('astro:page-load', () => {
-      document.getElementById('content')?.scrollIntoView();
+      document.getElementById('content')?.scrollIntoView({ block: 'start', behavior: 'instant' });
     });
   </script>
 </LairLayout>
