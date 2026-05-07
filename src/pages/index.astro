@@ -67,7 +67,7 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
 const searchIndex = allPoems.flatMap(p => {
   const versions: any[] = [];
   for (const [key, val] of Object.entries(p.data)) {
-    if (val && typeof val === 'object' && 'text' in val) {
+    if (val && typeof val === 'object' && val.text) {
       versions.push({
         title: (val as any).title || getTitle(p),
         author: (val as any).author || getAuthor(p),

@@ -9,11 +9,13 @@ export async function getStaticPaths() {
   const poems = await getCollection('poems');
   const paths = [];
   for (const poem of poems) {
-    for (const langKey of Object.keys(poem.data)) {
-      paths.push({
-        params: { slug: poem.id, lang: langKey },
-        props: { poem, langKey },
-      });
+    for (const [langKey, val] of Object.entries(poem.data)) {
+      if (val && typeof val === 'object' && val.text) {
+        paths.push({
+          params: { slug: poem.id, lang: langKey },
+          props: { poem, langKey },
+        });
+      }
     }
   }
   return paths;
