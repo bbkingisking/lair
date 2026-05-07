@@ -7,45 +7,55 @@ import { authorToSlug } from '../../utils/author-slug';
 export async function getStaticPaths() {
   const allPoems = await getCollection('poems');
   
-  // Get unique authors
+  // Get ALL unique author names from ALL versions
   const authorGroups = allPoems.reduce((acc: any, poem) => {
-    const author = poem.data.canonical?.author || 'Unknown';
-    if (!acc[author]) {
-      acc[author] = [];
+    // Iterate through all versions of the poem
+    for (const [versionKey, version] of Object.entries(poem.data)) {
+      if (version && typeof version === 'object' && 'text' in version) {
+        const author = (version as any).author || 'Unknown';
+        if (!acc[author]) {
+          acc[author] = [];
+        }
+        // Only add this poem once per author, storing the first version key that has this author
+        if (!acc[author].some((p: any) => p.poem.id === poem.id)) {
+          acc[author].push({
+            poem,
+            versionKey  // Store which version has this author
+          });
+        }
+      }
     }
-    acc[author].push(poem);
     return acc;
   }, {});
 
   return Object.keys(authorGroups).map(author => ({
     params: { author: authorToSlug(author) },
-    props: { poems: authorGroups[author], authorName: author }
+    props: { 
+      poemEntries: authorGroups[author], 
+      authorName: author 
+    }
   }));
 }
 
-const { poems, authorName } = Astro.props;
+const { poemEntries, authorName } = Astro.props;
 
 const allPoemsForSearch = await getCollection('poems');
 const searchIndex = allPoemsForSearch
   .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: p.data.canonical?.title || 'Untitled', author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical' }));
+  .map(p => ({ title: p.data.canonical?.title || 'Untitled', author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical', text: p.data.canonical?.text || '' }));
 
-// Helper functions
-const getTitle = (poem: any) => {
-  return poem.data.canonical?.title || 'Untitled';
+// Helper functions - get data from the specific version that has this author
+const getTitle = (poem: any, versionKey: string) => {
+  return poem.data[versionKey]?.title || poem.data.canonical?.title || 'Untitled';
 };
 
-const getAuthor = (poem: any) => {
-  return poem.data.canonical?.author || 'Unknown';
-};
-
-const getLanguage = (poem: any) => {
-  return poem.data.canonical?.language || 'en';
+const getLanguage = (poem: any, versionKey: string) => {
+  return poem.data[versionKey]?.language || versionKey;
 };
 
 // Sort poems by title
-const sortedPoems = [...poems].sort((a, b) => 
-  getTitle(a).localeCompare(getTitle(b))
+const sortedPoems = [...poemEntries].sort((a, b) => 
+  getTitle(a.poem, a.versionKey).localeCompare(getTitle(b.poem, b.versionKey))
 );
 ---
 
@@ -244,13 +254,13 @@ const sortedPoems = [...poems].sort((a, b) =>
         </div>
 
         <div class="poems-list">
-          {sortedPoems.map(poem => {
-            const lang = getLanguage(poem);
+          {sortedPoems.map(({ poem, versionKey }) => {
+            const lang = getLanguage(poem, versionKey);
             const scriptClass = getScriptClass(lang);
             return (
-              <a href={`/poems/${poem.id}/canonical`} class="poem-entry">
-                <div class:list={['poem-title', scriptClass]} lang={lang}>{getTitle(poem)}</div>
-                <div class="poem-meta">{getLanguage(poem)}</div>
+              <a href={`/poems/${poem.id}/${versionKey}`} class="poem-entry">
+                <div class:list={['poem-title', scriptClass]} lang={lang}>{getTitle(poem, versionKey)}</div>
+                <div class="poem-meta">{lang}</div>
               </a>
             );
           })}
