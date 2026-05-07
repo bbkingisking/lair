@@ -189,9 +189,9 @@ const searchIndex = allPoems
   </style>
 
   <div class="index-container">
-    <div class="tabbed-box">
+    <div class="tabbed-box" id="content">
       <nav class="tab-navbar">
-        <a href="/" class="tab-button">By Author</a>
+        <a href="/author" class="tab-button">By Author</a>
         <a href="/title" class="tab-button">By Title</a>
         <a href="/language" class="tab-button active">By Language</a>
       </nav>
@@ -208,4 +208,10 @@ const searchIndex = allPoems
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      document.getElementById('content')?.scrollIntoView();
+    });
+  </script>
 </LairLayout>
