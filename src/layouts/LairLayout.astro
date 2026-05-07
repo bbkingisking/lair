@@ -453,14 +453,14 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
     function initSearch() {
       var indexEl = document.getElementById('search-index');
       var input = document.getElementById('search');
-      if (!indexEl || !input || input._searchInit) return;
-      input._searchInit = true;
+      if (!indexEl || !input || (input as any)._searchInit) return;
+      (input as any)._searchInit = true;
 
       var index = JSON.parse(indexEl.textContent);
       var results = document.getElementById('search-results');
       var focused = -1;
 
-      function search(query) {
+      function search(query: string) {
         var q = query.toLowerCase();
         var titleAuthor = [];
         var textOnly = [];
@@ -477,44 +477,51 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
         return { titleAuthor: titleAuthor.slice(0, 8), textOnly: textOnly.slice(0, 8) };
       }
 
-      function renderResult(p, idx) {
+      function renderResult(p: any, idx: number) {
         return '<a href="/poems/' + p.slug + '/' + p.lang + '" class="search-result" data-idx="' + idx + '">' +
           '<div class="search-result-title">' + p.title + '</div>' +
           '<div class="search-result-author">' + p.author + '</div>' +
         '</a>';
       }
 
-      function render(groups) {
+      function render(groups: any) {
         var total = groups.titleAuthor.length + groups.textOnly.length;
         if (!total) {
-          results.innerHTML = '<div class="search-no-results">No poems found</div>';
-          results.classList.add('open');
+          if (results) {
+            results.innerHTML = '<div class="search-no-results">No poems found</div>';
+            results.classList.add('open');
+          }
           return;
         }
         var html = '';
         if (groups.titleAuthor.length) {
           html += '<div class="search-section-header">Title / Author</div>';
-          html += groups.titleAuthor.map(function(p, i) { return renderResult(p, i); }).join('');
+          html += groups.titleAuthor.map(function(p: any, i: number) { return renderResult(p, i); }).join('');
         }
         if (groups.textOnly.length) {
           html += '<div class="search-section-header">Text</div>';
-          html += groups.textOnly.map(function(p, i) { return renderResult(p, i + groups.titleAuthor.length); }).join('');
+          html += groups.textOnly.map(function(p: any, i: number) { return renderResult(p, i + groups.titleAuthor.length); }).join('');
         }
-        results.innerHTML = html;
-        results.classList.add('open');
+        if (results) {
+          results.innerHTML = html;
+          results.classList.add('open');
+        }
       }
 
-      input.addEventListener('input', function() {
+      input.addEventListener('input', function(this: HTMLInputElement) {
         focused = -1;
         if (!this.value.trim()) {
-          results.classList.remove('open');
-          results.innerHTML = '';
+          if (results) {
+            results.classList.remove('open');
+            results.innerHTML = '';
+          }
           return;
         }
         render(search(this.value));
       });
 
       input.addEventListener('keydown', function(e) {
+        if (!results) return;
         var items = results.querySelectorAll('.search-result');
         if (!items.length) return;
 
@@ -528,20 +535,20 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
           items.forEach(function(el, i) { el.classList.toggle('focused', i === focused); });
         } else if (e.key === 'Enter' && focused >= 0) {
           e.preventDefault();
-          window.location = items[focused].href;
+          window.location.href = (items[focused] as HTMLAnchorElement).href;
         } else if (e.key === 'Escape') {
-          results.classList.remove('open');
-          input.blur();
+          if (results) results.classList.remove('open');
+          if (input) input.blur();
         }
       });
 
       document.addEventListener('click', function(e) {
-        if (!e.target.closest('.search-wrap')) {
-          results.classList.remove('open');
+        if (e.target && !(e.target as HTMLElement).closest('.search-wrap')) {
+          if (results) results.classList.remove('open');
         }
       });
 
-      input.addEventListener('focus', function() {
+      input.addEventListener('focus', function(this: HTMLInputElement) {
         if (this.value.trim()) render(search(this.value));
       });
     }
