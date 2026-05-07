@@ -1,6 +1,17 @@
 import { execSync } from "node:child_process";
-import { existsSync, cpSync, globSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, cpSync, globSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, basename } from "node:path";
+
+// Load .env file if present (for local dev); CI sets vars directly in the environment
+const envPath = resolve(".env");
+if (existsSync(envPath)) {
+  for (const line of readFileSync(envPath, "utf8").split("\n")) {
+    const match = line.match(/^\s*([^#=]+?)\s*=\s*(.*?)\s*$/);
+    if (match && !(match[1] in process.env)) {
+      process.env[match[1]] = match[2];
+    }
+  }
+}
 
 const REPO = process.env.POETRY_REPO_URL;
 if (!REPO) {

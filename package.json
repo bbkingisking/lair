@@ -9,7 +9,7 @@
     "predev": "npm run fetch-poems",
     "dev": "astro dev",
     "optimize-fonts": "node scripts/optimize-fonts.mjs",
-    "fetch-poems": "node --env-file .env scripts/fetch-poems.mjs",
+    "fetch-poems": "node scripts/fetch-poems.mjs",
     "prebuild": "npm run fetch-poems && npm run optimize-fonts",
     "build": "astro build",
     "preview": "astro preview",
