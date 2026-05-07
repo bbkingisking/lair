@@ -105,7 +105,6 @@ const formatVersionLabel = (key: string, lang?: string) => {
       margin-bottom: 1.5rem;
       border-bottom: 2px solid var(--border);
       flex-wrap: wrap;
-      position: relative;
     }
     
     .version-tab {
@@ -134,9 +133,14 @@ const formatVersionLabel = (key: string, lang?: string) => {
     }
 
     .compare-toggle {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .compare-toggle {
+        display: none;
+      }
     }
 
     .source-icons {
