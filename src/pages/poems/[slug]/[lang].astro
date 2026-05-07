@@ -49,11 +49,11 @@ const webUrl = versionSource && isValidUrl(versionSource) ? versionSource : unde
 const isbnUrl = versionIsbn ? `https://openlibrary.org/isbn/${versionIsbn}` : undefined;
 
 const available = Object.entries(poem.data)
-  .filter(([_, v]) => v && v.text)
+  .filter(([_, v]) => v && typeof v === 'object' && v.text)
   .map(([key, v]) => ({
     key,
-    label: v.title || key,
-    language: v.language || 'en',
+    label: (v as any).title || key,
+    language: (v as any).language || 'en',
   }));
 
 const otherLang = available.find(a => a.key !== langKey)?.key;
