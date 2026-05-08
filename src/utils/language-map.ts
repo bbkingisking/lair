@@ -24,6 +24,8 @@ const languageToScript: Record<string, string> = {
   'zho-Hans': 'Hani',
   'zho-Hant': 'Hani',
   jpn: 'Jpan',
+  // Bengali
+  ben: 'Beng',
   // Korean
   kor: 'Hang',
   okm: 'Hang',
@@ -38,6 +40,7 @@ const scriptToClass: Record<string, string> = {
   Hani: 'script-hanzi',
   Jpan: 'script-japanese',
   Hang: 'script-hangul',
+  Beng: 'script-bengali',
 };
 
 export function getScriptClass(language: string): string {

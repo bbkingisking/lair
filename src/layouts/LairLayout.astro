@@ -77,12 +77,21 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       font-style: normal;
     }
 
+    /* Bengali */
+    @font-face {
+      font-family: 'NotoSerifBengali';
+      src: url('/fonts/NotoSerifBengali-VariableFont_wdth,wght.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+
     .script-latin   { font-family: 'IMFellEnglish', serif; }
     .script-cyrillic { font-family: 'Marxiana', serif; }
     .script-hanzi   { font-family: 'ZhuqueFangsong', serif; }
     .script-hangul  { font-family: 'AGChoiJeongHo', 'NotoSansCJKkr', serif; }
     .script-arabic  { font-family: serif; }
     .script-japanese { font-family: serif; }
+    .script-bengali { font-family: 'NotoSerifBengali', serif; }
 
     :root {
       --cream: #f5f0e8;
