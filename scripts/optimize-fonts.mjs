@@ -66,7 +66,8 @@ function writeUnicodesFile(chars) {
 
 const FONTS = [
   // CJK/Hangul/Bengali — subset to used chars
-  { file: 'ZhuqueFangsong-Regular.ttf', subset: true },
+  { file: 'NotoSerifSC-VariableFont_wght.ttf', subset: true },
+  { file: 'NotoSerifTC-VariableFont_wght.ttf', subset: true },
   { file: 'AGChoiJeongHoStd.otf', subset: true },
   { file: 'NotoSansCJKkr-Regular.otf', subset: true },
   { file: 'NotoSerifBengali-VariableFont_wdth,wght.ttf', subset: true },

@@ -20,6 +20,12 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v6
+      - name: Set up Python for font subsetting
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install font subsetting tools
+        run: pip install fonttools brotli
       - name: Install, build, and upload your site
         uses: withastro/action@v6
 

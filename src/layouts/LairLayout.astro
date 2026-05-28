@@ -53,11 +53,19 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
       font-style: italic;
     }
 
-    /* Classical Chinese */
+    /* Chinese — Simplified (SC) */
     @font-face {
-      font-family: 'ZhuqueFangsong';
-      src: url('/fonts/ZhuqueFangsong-Regular.woff2') format('woff2');
-      font-weight: normal;
+      font-family: 'NotoSerifSC';
+      src: url('/fonts/NotoSerifSC-VariableFont_wght.woff2') format('woff2');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+
+    /* Chinese — Traditional (TC) */
+    @font-face {
+      font-family: 'NotoSerifTC';
+      src: url('/fonts/NotoSerifTC-VariableFont_wght.woff2') format('woff2');
+      font-weight: 100 900;
       font-style: normal;
     }
 
@@ -87,7 +95,8 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
 
     .script-latin   { font-family: 'IMFellEnglish', serif; }
     .script-cyrillic { font-family: 'Marxiana', serif; }
-    .script-hanzi   { font-family: 'ZhuqueFangsong', serif; }
+    .script-hans    { font-family: 'NotoSerifSC', serif; }
+    .script-hant    { font-family: 'NotoSerifTC', serif; }
     .script-hangul  { font-family: 'AGChoiJeongHo', 'NotoSansCJKkr', serif; }
     .script-arabic  { font-family: serif; }
     .script-japanese { font-family: serif; }

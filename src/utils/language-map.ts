@@ -20,9 +20,10 @@ const languageToScript: Record<string, string> = {
   ara: 'Arab',
   pes: 'Arab',
   // CJK
-  lzh: 'Hani',
-  'zho-Hans': 'Hani',
-  'zho-Hant': 'Hani',
+  lzh: 'Hant',
+  zho: 'Hant',
+  'zho-Hans': 'Hans',
+  'zho-Hant': 'Hant',
   jpn: 'Jpan',
   // Bengali
   ben: 'Beng',
@@ -37,7 +38,8 @@ const scriptToClass: Record<string, string> = {
   Latn: 'script-latin',
   Cyrl: 'script-cyrillic',
   Arab: 'script-arabic',
-  Hani: 'script-hanzi',
+  Hans: 'script-hans',
+  Hant: 'script-hant',
   Jpan: 'script-japanese',
   Hang: 'script-hangul',
   Beng: 'script-bengali',
