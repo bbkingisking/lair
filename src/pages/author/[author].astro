@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import LairLayout from '../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../utils/language-map';
 import { authorToSlug } from '../../utils/author-slug';
+import { versionTitle } from '../../utils/poem-title';
 
 export async function getStaticPaths() {
   const allPoems = await getCollection('poems');
@@ -42,11 +43,11 @@ const { poemEntries, authorName } = Astro.props;
 const allPoemsForSearch = await getCollection('poems');
 const searchIndex = allPoemsForSearch
   .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: p.data.canonical?.title || 'Untitled', author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical', text: p.data.canonical?.text || '' }));
+  .map(p => ({ title: versionTitle(p.data.canonical), author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical', text: p.data.canonical?.text || '' }));
 
 // Helper functions - get data from the specific version that has this author
 const getTitle = (poem: any, versionKey: string) => {
-  return poem.data[versionKey]?.title || poem.data.canonical?.title || 'Untitled';
+  return versionTitle(poem.data[versionKey]);
 };
 
 const getLanguage = (poem: any, versionKey: string) => {

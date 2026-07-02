@@ -5,6 +5,7 @@ import PoemDisplay from '../../../../components/PoemDisplay.astro';
 import LanguageSwitcher from '../../../../components/LanguageSwitcher.astro';
 import { getScriptClass } from '../../../../utils/language-map';
 import { authorToSlug } from '../../../../utils/author-slug';
+import { versionTitle } from '../../../../utils/poem-title';
 
 export async function getStaticPaths() {
   const poems = await getCollection('poems');
@@ -104,7 +105,7 @@ const available = Object.entries(poem.data)
   }));
 ---
 
-<LairLayout title={`${version1.title || canonical.title || 'Untitled'} — Compare`} {scriptClass}>
+<LairLayout title={`${versionTitle(version1)} — Compare`} {scriptClass}>
   <div class="compare-container">
     <div class="poem-panel" dir={isRtl1 && !isVertical1 ? 'rtl' : 'ltr'}>
       <LanguageSwitcher

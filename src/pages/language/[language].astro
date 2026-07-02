@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import LairLayout from '../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../utils/language-map';
 import { iso6393 } from 'iso-639-3';
+import { versionTitle } from '../../utils/poem-title';
 
 export async function getStaticPaths() {
   // Normalize language code: split by '-' and take first part
@@ -51,7 +52,7 @@ const { poems, languageCode } = Astro.props;
 const allPoemsForSearch = await getCollection('poems');
 const searchIndex = allPoemsForSearch
   .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: p.data.canonical?.title || 'Untitled', author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical' }));
+  .map(p => ({ title: versionTitle(p.data.canonical), author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical' }));
 const languageName = getLanguageName(languageCode);
 
 // Helper functions - find the version that matches the current language
@@ -72,7 +73,7 @@ const getVersionForLanguage = (poem: any) => {
 
 const getTitle = (poem: any) => {
   const { version } = getVersionForLanguage(poem);
-  return version?.title || 'Untitled';
+  return versionTitle(version);
 };
 
 const getAuthor = (poem: any) => {

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import LairLayout from '../layouts/LairLayout.astro';
 import { iso6393 } from 'iso-639-3';
+import { versionTitle } from '../utils/poem-title';
 
 const allPoems = await getCollection('poems');
 
@@ -47,7 +48,7 @@ const uniqueLanguages = Object.keys(languageGroups).sort((a, b) =>
 
 const searchIndex = allPoems
   .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: p.data.canonical?.title || 'Untitled', author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical' }));
+  .map(p => ({ title: versionTitle(p.data.canonical), author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical' }));
 ---
 
 <LairLayout title="The dragon's lair" showSidebar={false} searchIndex={searchIndex}>

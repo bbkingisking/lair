@@ -2,12 +2,13 @@
 import { getCollection } from 'astro:content';
 import LairLayout from '../layouts/LairLayout.astro';
 import { getScriptClass } from '../utils/language-map';
+import { versionTitle } from '../utils/poem-title';
 
 const allPoems = await getCollection('poems');
 
 // Helper to get title from a poem
 const getTitle = (poem: any) => {
-  return poem.data.canonical?.title || 'Untitled';
+  return versionTitle(poem.data.canonical);
 };
 
 // Helper to get author from a poem
