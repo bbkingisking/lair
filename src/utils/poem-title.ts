@@ -14,5 +14,5 @@ export function deriveTitle(text: string | undefined, maxLength = MAX_LENGTH): s
 }
 
 export function versionTitle(version: { title?: string; text?: string } | undefined): string {
-  return version?.title || deriveTitle(version?.text);
+  return version?.title || `[${deriveTitle(version?.text)}]`;
 }
