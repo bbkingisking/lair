@@ -7,28 +7,46 @@
 //
 // Env:
 //   BUNNY_PASSWORD      required — Storage zone password (FTP & API Access)
+//   BUNNY_API_KEY       optional — account key; without it the edge is not purged
 //   BUNNY_STORAGE_ZONE  default 'dragonlair'
 //   BUNNY_STORAGE_HOST  default 'storage.bunnycdn.com' (region-specific otherwise)
 //   BUNNY_DRY_RUN       set to any value to report the plan without writing
+//
+// Either secret may instead be given as BUNNY_PASSWORD_FILE / BUNNY_API_KEY_FILE
+// pointing at a file, which is how the systemd unit passes credentials.
 //
 // Uploads only what changed, by comparing the remote SHA256 the list API
 // reports against the local file's. Removes remote files that are no longer in
 // dist/, so a deploy leaves the zone matching the build exactly.
 
 import { readFile, readdir, stat } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, relative, sep, posix } from 'node:path';
 
+/**
+ * A secret, from either the variable itself or a file it points at.
+ *
+ * systemd hands credentials to a unit as files under $CREDENTIALS_DIRECTORY
+ * rather than as environment variables, so the *_FILE spelling is what the
+ * service uses; the plain variable stays for interactive runs.
+ */
+function secret(name) {
+  const path = process.env[`${name}_FILE`];
+  if (path) return readFileSync(path, 'utf8').trim();
+  return process.env[name];
+}
+
 const ZONE = process.env.BUNNY_STORAGE_ZONE ?? 'dragonlair';
 const HOST = process.env.BUNNY_STORAGE_HOST ?? 'storage.bunnycdn.com';
-const KEY = process.env.BUNNY_PASSWORD;
+const KEY = secret('BUNNY_PASSWORD');
 const DRY_RUN = Boolean(process.env.BUNNY_DRY_RUN);
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const BASE = `https://${HOST}/${ZONE}`;
 const CONCURRENCY = 16;
 
 if (!KEY) {
-  console.error('BUNNY_PASSWORD is not set.');
+  console.error('Set BUNNY_PASSWORD or BUNNY_PASSWORD_FILE.');
   process.exit(1);
 }
 
@@ -128,7 +146,7 @@ if (failures.length) {
 // invisible until the cache expires. Purging needs an *account* API key, which
 // is a different credential from the storage zone password.
 if (changed.length || stale.length) {
-  const apiKey = process.env.BUNNY_API_KEY;
+  const apiKey = secret('BUNNY_API_KEY');
   if (!apiKey) {
     console.warn('\nBUNNY_API_KEY not set — edge cache NOT purged.');
     console.warn('Changed files will keep serving stale until the pull zone TTL expires.');
