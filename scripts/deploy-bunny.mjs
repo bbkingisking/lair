@@ -155,6 +155,15 @@ if (failures.length) {
   process.exit(1);
 }
 
+// Uploads authenticate with the storage zone password; purging needs the
+// account API key. Getting a 401 here after a successful upload means the two
+// have been mixed up, which is worth saying outright — the storage password is
+// accepted everywhere else in this script.
+const REJECTED =
+  'purge failed: 401 — the account API key was rejected. This is a different ' +
+  'credential from the storage zone password (Account Settings > API Key, not ' +
+  'Storage > FTP & API Access). Check BUNNY_API_KEY / BUNNY_API_KEY_FILE.';
+
 // Uploading to storage does not invalidate the edge. The pull zone caches for
 // its configured TTL (30 days by default), so without this a deploy is
 // invisible until the cache expires. Purging needs an *account* API key, which
@@ -171,6 +180,7 @@ if (changed.length || stale.length) {
       const res = await fetch('https://api.bunny.net/pullzone', {
         headers: { AccessKey: apiKey, accept: 'application/json' },
       });
+      if (res.status === 401) throw new Error(REJECTED);
       if (!res.ok) throw new Error(`pull zone lookup failed: ${res.status}`);
       const zones = await res.json();
       const list = Array.isArray(zones) ? zones : zones.Items ?? [];
@@ -181,6 +191,7 @@ if (changed.length || stale.length) {
       method: 'POST',
       headers: { AccessKey: apiKey },
     });
+    if (res.status === 401) throw new Error(REJECTED);
     if (!res.ok) throw new Error(`purge failed: ${res.status}`);
     console.log(`purged pull zone ${pullZoneName} (${id}).`);
   }
