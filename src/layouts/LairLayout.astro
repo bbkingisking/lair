@@ -16,10 +16,11 @@ export interface Props {
   showSidebar?: boolean;
   sidebarContent?: any;
   scriptClass?: string;
-  searchIndex?: Array<{ title: string; author: string; slug: string; lang: string; text: string }>;
+  /** Show the masthead search box. The index itself is fetched from /search-index.json. */
+  search?: boolean;
 }
 
-const { title, previewTitle, description, preview = false, showSidebar = false, sidebarContent, scriptClass = 'script-latin', searchIndex } = Astro.props;
+const { title, previewTitle, description, preview = false, showSidebar = false, sidebarContent, scriptClass = 'script-latin', search = false } = Astro.props;
 
 const SITE_NAME = "The dragon's lair";
 // Link previews require absolute URLs; `site` in astro.config.mjs supplies the origin.
@@ -500,7 +501,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
   <h1><a href="/">The dragon's lair</a></h1>
   <div class="rule"><span>✦</span></div>
   <p class="subtitle">A personal collection of verse</p>
-  {searchIndex && (
+  {search && (
     <img src="/logo.svg" alt="The dragon's lair" class="logo">
     <div class="search-container">
       <div class="search-wrap">
@@ -524,20 +525,28 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
   </main>
 </div>
 
-{searchIndex && (
-  <script type="application/json" id="search-index" set:html={JSON.stringify(searchIndex)} />
+{search && (
   <script>
+    // Cached on window rather than in module scope: this script is inlined per
+    // page, and ClientRouter re-executes it on every view transition, which
+    // would otherwise re-fetch the index after each navigation.
+    function loadIndex(): Promise<any[]> {
+      var w = window as any;
+      if (!w.__searchIndex) {
+        w.__searchIndex = fetch('/search-index.json').then(function (r) { return r.json(); });
+      }
+      return w.__searchIndex;
+    }
+
     function initSearch() {
-      var indexEl = document.getElementById('search-index');
       var input = document.getElementById('search');
-      if (!indexEl || !input || (input as any)._searchInit) return;
+      if (!input || (input as any)._searchInit) return;
       (input as any)._searchInit = true;
 
-      var index = JSON.parse(indexEl.textContent);
       var results = document.getElementById('search-results');
       var focused = -1;
 
-      function search(query: string) {
+      function search(index: any[], query: string) {
         var q = query.toLowerCase();
         var titleAuthor = [];
         var textOnly = [];
@@ -547,7 +556,7 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
           var authorMatch = p.author.toLowerCase().includes(q);
           if (titleMatch || authorMatch) {
             titleAuthor.push(p);
-          } else if (p.text.toLowerCase().includes(q)) {
+          } else if ((p.text || '').toLowerCase().includes(q)) {
             textOnly.push(p);
           }
         }
@@ -587,14 +596,19 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
 
       input.addEventListener('input', function(this: HTMLInputElement) {
         focused = -1;
-        if (!this.value.trim()) {
+        var query = this.value;
+        if (!query.trim()) {
           if (results) {
             results.classList.remove('open');
             results.innerHTML = '';
           }
           return;
         }
-        render(search(this.value));
+        loadIndex().then(function (index) {
+          // Drop a response the user has already typed past.
+          if ((input as HTMLInputElement).value !== query) return;
+          render(search(index, query));
+        });
       });
 
       input.addEventListener('keydown', function(e) {
@@ -625,8 +639,14 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
         }
       });
 
+      // Warm the index on focus so the first keystroke has it in hand.
       input.addEventListener('focus', function(this: HTMLInputElement) {
-        if (this.value.trim()) render(search(this.value));
+        var query = this.value;
+        loadIndex().then(function (index) {
+          if (query.trim() && (input as HTMLInputElement).value === query) {
+            render(search(index, query));
+          }
+        });
       });
     }
     document.addEventListener('astro:page-load', initSearch);

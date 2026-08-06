@@ -26,12 +26,9 @@ const poemsByTitle = [...allPoems].sort((a, b) => {
   return getTitle(a).localeCompare(getTitle(b));
 });
 
-const searchIndex = allPoems
-  .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: getTitle(p), author: getAuthor(p), slug: p.id, lang: 'canonical' }));
 ---
 
-<LairLayout title="The dragon's lair" showSidebar={false} searchIndex={searchIndex}>
+<LairLayout title="The dragon's lair" showSidebar={false} search>
   <style>
     .index-container {
       max-width: 900px;

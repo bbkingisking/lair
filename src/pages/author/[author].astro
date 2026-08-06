@@ -40,10 +40,6 @@ export async function getStaticPaths() {
 
 const { poemEntries, authorName } = Astro.props;
 
-const allPoemsForSearch = await getCollection('poems');
-const searchIndex = allPoemsForSearch
-  .filter(p => p.data.canonical?.text)
-  .map(p => ({ title: versionTitle(p.data.canonical), author: p.data.canonical?.author || 'Unknown', slug: p.id, lang: 'canonical', text: p.data.canonical?.text || '' }));
 
 // Helper functions - get data from the specific version that has this author
 const getTitle = (poem: any, versionKey: string) => {
@@ -60,7 +56,7 @@ const sortedPoems = [...poemEntries].sort((a, b) =>
 );
 ---
 
-<LairLayout title={`${authorName} - The dragon's lair`} showSidebar={false} searchIndex={searchIndex}>
+<LairLayout title={`${authorName} - The dragon's lair`} showSidebar={false} search>
   <style>
     .index-container {
       max-width: 900px;
