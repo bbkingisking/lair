@@ -16,3 +16,22 @@ export function deriveTitle(text: string | undefined, maxLength = MAX_LENGTH): s
 export function versionTitle(version: { title?: string; text?: string } | undefined): string {
   return version?.title || `[${deriveTitle(version?.text)}]`;
 }
+
+// Script-neutral name separator: reads as a middle dot in Latin and Cyrillic
+// and as 中黑点 in CJK, where an em dash would sit awkwardly.
+const ATTRIBUTION = ' · ';
+
+/**
+ * Title carrying its own byline, for contexts that show a title without the
+ * page around it to supply the author — link previews, chiefly.
+ *
+ * `fallbackAuthor` covers versions that carry no author of their own; a
+ * translation usually inherits the canonical attribution.
+ */
+export function attributedTitle(
+  version: { title?: string; text?: string; author?: string } | undefined,
+  fallbackAuthor?: string,
+): string {
+  const author = version?.author || fallbackAuthor;
+  return [versionTitle(version), author].filter(Boolean).join(ATTRIBUTION);
+}

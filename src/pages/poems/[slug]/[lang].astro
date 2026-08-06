@@ -4,7 +4,8 @@ import LairLayout from '../../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../../utils/language-map';
 import { authorToSlug } from '../../../utils/author-slug';
 import PoemDisplay from '../../../components/PoemDisplay.astro';
-import { versionTitle } from '../../../utils/poem-title';
+import { versionTitle, attributedTitle } from '../../../utils/poem-title';
+import { excerpt } from '../../../utils/poem-excerpt';
 
 export async function getStaticPaths() {
   const poems = await getCollection('poems');
@@ -98,7 +99,13 @@ const formatVersionLabel = (key: string, lang?: string) => {
 };
 ---
 
-<LairLayout title={versionTitle(version)} {scriptClass}>
+<LairLayout
+  title={versionTitle(version)}
+  previewTitle={attributedTitle(version, canonical.author)}
+  description={excerpt(version.text)}
+  preview
+  {scriptClass}
+>
   <style>
     .versions-nav {
       display: flex;

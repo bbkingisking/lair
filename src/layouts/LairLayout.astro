@@ -3,13 +3,27 @@ import { ClientRouter } from 'astro:transitions';
 
 export interface Props {
   title: string;
+  /** Preview-only title, when the shared card wants more than the tab does. Defaults to `title`. */
+  previewTitle?: string;
+  description?: string;
+  /**
+   * Opt in to Open Graph tags. Off by default: an individual poem is the only
+   * thing here that's a document worth sharing — indexes and the compare view
+   * are navigation, and a card promising a poem that turns out to be a list of
+   * authors is worse than no card.
+   */
+  preview?: boolean;
   showSidebar?: boolean;
   sidebarContent?: any;
   scriptClass?: string;
   searchIndex?: Array<{ title: string; author: string; slug: string; lang: string; text: string }>;
 }
 
-const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin', searchIndex } = Astro.props;
+const { title, previewTitle, description, preview = false, showSidebar = false, sidebarContent, scriptClass = 'script-latin', searchIndex } = Astro.props;
+
+const SITE_NAME = "The dragon's lair";
+// Link previews require absolute URLs; `site` in astro.config.mjs supplies the origin.
+const pageUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!DOCTYPE html>
@@ -18,6 +32,26 @@ const { title, showSidebar = false, sidebarContent, scriptClass = 'script-latin'
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
+  <link rel="canonical" href={pageUrl} />
+
+  {preview && (
+    <>
+      {description && <meta name="description" content={description} />}
+      <meta property="og:type" content="article" />
+      <meta property="og:site_name" content={SITE_NAME} />
+      <meta property="og:title" content={previewTitle ?? title} />
+      {description && <meta property="og:description" content={description} />}
+      <meta property="og:url" content={pageUrl} />
+      <meta property="og:image" content={new URL('/og-default.png', Astro.site)} />
+      <meta property="og:image:width" content="600" />
+      <meta property="og:image:height" content="600" />
+      <meta property="og:image:alt" content={SITE_NAME} />
+      {/* `summary` requests the small square thumbnail the logo is drawn for;
+          `summary_large_image` would crop it into a 1.91:1 banner. */}
+      <meta name="twitter:card" content="summary" />
+    </>
+  )}
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@400;600&display=swap" rel="stylesheet">
