@@ -14,9 +14,11 @@ export async function getStaticPaths() {
   for (const poem of poems) {
     const langKeys = Object.keys(poem.data).filter(key => poem.data[key]?.text);
     
-    // Generate all possible pairs of languages (including same language on both sides)
+    // Every ordered pair of two *different* versions. A version compared against
+    // itself renders the same text twice, so those routes are not generated.
     for (let i = 0; i < langKeys.length; i++) {
       for (let j = 0; j < langKeys.length; j++) {
+        if (i === j) continue;
         paths.push({
           params: { 
             slug: poem.id, 

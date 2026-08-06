@@ -19,6 +19,14 @@ const { available, current, slug, compareMode = false, compareSide, compareOther
 // Build the href based on mode
 const buildHref = (langKey: string) => {
   if (compareMode && compareSide && compareOtherLang) {
+    // Picking the version already shown opposite swaps the two panels. Placing
+    // it on this side as-is would ask for a version compared against itself,
+    // which is not a route.
+    if (langKey === compareOtherLang) {
+      return compareSide === 'left'
+        ? `/poems/${slug}/compare/${langKey}+${current}`
+        : `/poems/${slug}/compare/${current}+${langKey}`;
+    }
     if (compareSide === 'left') {
       return `/poems/${slug}/compare/${langKey}+${compareOtherLang}`;
     } else {
