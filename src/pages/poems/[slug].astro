@@ -10,6 +10,11 @@ export async function getStaticPaths() {
 }
 
 const { poem } = Astro.props;
-// Redirect to the canonical language key (which is literally "canonical" in your schema)
-return Astro.redirect(`/poems/${poem.id}/canonical`);
+// Redirect to the canonical language key (which is literally "canonical" in your schema).
+//
+// The slug is percent-encoded because this becomes a Location header, and header
+// values are ByteStrings: a filename containing anything above U+00FF — an en
+// dash in a line range, say — otherwise fails the build outright rather than
+// producing a broken link.
+return Astro.redirect(`/poems/${encodeURIComponent(poem.id)}/canonical`);
 ---
