@@ -35,6 +35,11 @@ export async function buildSearchIndex(): Promise<SearchEntry[]> {
       });
     }
 
+    // Canonical first, so a consumer collapsing versions to one result per poem
+    // lands on the default reading view rather than whichever key YAML ordering
+    // happened to put first.
+    entries.sort((a, b) => Number(b.lang === 'canonical') - Number(a.lang === 'canonical'));
+
     return entries;
   });
 }

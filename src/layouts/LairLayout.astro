@@ -546,20 +546,35 @@ const pageUrl = new URL(Astro.url.pathname, Astro.site);
       var results = document.getElementById('search-results');
       var focused = -1;
 
+      // The index holds every version of every poem so that searching a line in
+      // any language works. Results collapse back to one row per poem, or a
+      // multilingual poem would list itself once per version under the same
+      // title and author. Title/author matches are collected first so a poem
+      // never lands in the weaker text bucket when its title matched.
       function search(index: any[], query: string) {
         var q = query.toLowerCase();
+        var matched = new Set();
         var titleAuthor = [];
         var textOnly = [];
+
         for (var i = 0; i < index.length; i++) {
           var p = index[i];
-          var titleMatch = p.title.toLowerCase().includes(q);
-          var authorMatch = p.author.toLowerCase().includes(q);
-          if (titleMatch || authorMatch) {
+          if (matched.has(p.slug)) continue;
+          if (p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q)) {
+            matched.add(p.slug);
             titleAuthor.push(p);
-          } else if ((p.text || '').toLowerCase().includes(q)) {
-            textOnly.push(p);
           }
         }
+
+        for (var j = 0; j < index.length; j++) {
+          var v = index[j];
+          if (matched.has(v.slug)) continue;
+          if ((v.text || '').toLowerCase().includes(q)) {
+            matched.add(v.slug);
+            textOnly.push(v);
+          }
+        }
+
         return { titleAuthor: titleAuthor.slice(0, 8), textOnly: textOnly.slice(0, 8) };
       }
 
