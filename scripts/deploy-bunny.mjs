@@ -116,6 +116,20 @@ const stale = [...remote.keys()].filter(path => !local.has(path));
 console.log(`local ${local.size} files, remote ${remote.size}`);
 console.log(`  upload ${changed.length}, delete ${stale.length}, unchanged ${local.size - changed.length}`);
 
+// A deploy that removes most of the zone is far likelier to be a truncated
+// build than an intended change — a half-synced poem directory, an aborted
+// build, a wrong path. The sync would otherwise carry it out faithfully.
+const MAX_DELETE_RATIO = Number(process.env.BUNNY_MAX_DELETE_RATIO ?? 0.2);
+const deleteRatio = remote.size ? stale.length / remote.size : 0;
+if (deleteRatio > MAX_DELETE_RATIO && !process.env.BUNNY_ALLOW_MASS_DELETE) {
+  console.error(
+    `\nRefusing to delete ${stale.length} of ${remote.size} remote files ` +
+    `(${(deleteRatio * 100).toFixed(1)}%, limit ${(MAX_DELETE_RATIO * 100).toFixed(0)}%).`,
+  );
+  console.error('If the build really is meant to be this much smaller, set BUNNY_ALLOW_MASS_DELETE=1.');
+  process.exit(1);
+}
+
 if (DRY_RUN) {
   for (const [path] of changed.slice(0, 20)) console.log(`  + ${path}`);
   for (const path of stale.slice(0, 20)) console.log(`  - ${path}`);
