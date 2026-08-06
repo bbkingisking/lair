@@ -14,6 +14,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "og-preview": "node scripts/og-preview.mjs",
+    "deploy": "node scripts/deploy-bunny.mjs",
     "astro": "astro"
   },
   "dependencies": {
