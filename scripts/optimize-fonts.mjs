@@ -6,7 +6,8 @@
  * - Subsets CJK/Hangul fonts to only needed glyphs
  * - Converts all fonts to WOFF2
  *
- * Requires: python3, fonttools (pyftsubset), brotli
+ * Requires: python3 with the fonttools and brotli modules importable.
+ * Override the interpreter with PYTHON= if it is not `python3`.
  */
 
 import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
@@ -18,6 +19,7 @@ const ROOT = new URL('..', import.meta.url).pathname;
 const POEMS_DIR = join(ROOT, 'src/content/poems');
 const SRC_DIR = join(ROOT, 'fonts-src');
 const OUT_DIR = join(ROOT, 'public/fonts');
+const PYTHON = process.env.PYTHON ?? 'python3';
 
 // --- Step 1: collect all characters used in poems ---
 
@@ -117,7 +119,10 @@ function optimizeFonts() {
       args.push('--name-IDs=*');
     }
 
-    const cmd = `pyftsubset ${args.map(a => `"${a}"`).join(' ')}`;
+    // Invoked as a module rather than via the pyftsubset console script:
+    // Debian's python3-fonttools does not put that on PATH, and a systemd
+    // unit gets a minimal PATH regardless of what an interactive shell has.
+    const cmd = `${PYTHON} -m fontTools.subset ${args.map(a => `"${a}"`).join(' ')}`;
     console.log(`  ${font.file} → ${outName}`);
 
     try {
