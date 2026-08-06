@@ -12,6 +12,15 @@ permissions:
   pages: write
   id-token: write
 
+# Pages serialises deployments through the github-pages environment, so a push
+# and a content-updated dispatch arriving together can pile up behind each
+# other. Queue them here instead, and never cancel a deployment mid-flight —
+# that is what leaves the environment's lock held and every later run stuck in
+# deployment_queued.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
