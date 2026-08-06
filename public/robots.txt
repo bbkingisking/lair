@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bbkingisking.github.io/sitemap-index.xml
+Sitemap: https://dragonbooks.org/sitemap-index.xml
