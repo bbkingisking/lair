@@ -13,6 +13,7 @@
     "prebuild": "npm run fetch-poems && npm run optimize-fonts",
     "build": "astro build",
     "preview": "astro preview",
+    "og-preview": "node scripts/og-preview.mjs",
     "astro": "astro"
   },
   "dependencies": {
