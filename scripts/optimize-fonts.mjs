@@ -9,7 +9,7 @@
  * Requires: python3, fonttools (pyftsubset), brotli
  */
 
-import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readdirSync, readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -80,12 +80,16 @@ const FONTS = [
 ];
 
 function optimizeFonts() {
+  // public/fonts is generated output and gitignored, so it may not exist yet.
+  mkdirSync(OUT_DIR, { recursive: true });
+
   console.log('Scanning poems for used characters…');
   const chars = extractChars();
   const unicodesFile = writeUnicodesFile(chars);
   console.log(`Found ${chars.size} unique characters (${unicodesFile})`);
 
   const results = [];
+  const failures = [];
 
   for (const font of FONTS) {
     const input = join(SRC_DIR, font.file);
@@ -93,7 +97,8 @@ function optimizeFonts() {
     const output = join(OUT_DIR, outName);
 
     if (!existsSync(input)) {
-      console.warn(`  SKIP ${font.file} (not found)`);
+      console.error(`  MISSING SOURCE ${font.file}`);
+      failures.push(font.file);
       continue;
     }
 
@@ -124,6 +129,7 @@ function optimizeFonts() {
       results.push({ file: font.file, before, after });
     } catch (err) {
       console.error(`    FAILED: ${err.stderr?.toString() || err.message}`);
+      failures.push(font.file);
     }
   }
 
@@ -131,6 +137,11 @@ function optimizeFonts() {
   const totalBefore = results.reduce((s, r) => s + r.before, 0);
   const totalAfter = results.reduce((s, r) => s + r.after, 0);
   console.log(`\nTotal: ${(totalBefore / 1024).toFixed(0)}KB → ${(totalAfter / 1024).toFixed(0)}KB (${((1 - totalAfter / totalBefore) * 100).toFixed(1)}% smaller)`);
+
+  // Fail loudly. A silent skip here ships a site with no webfonts at all.
+  if (failures.length) {
+    throw new Error(`font optimization failed for: ${failures.join(', ')}`);
+  }
 }
 
 optimizeFonts();
