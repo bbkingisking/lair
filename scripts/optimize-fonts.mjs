@@ -71,6 +71,7 @@ const FONTS = [
   { file: 'AGChoiJeongHoStd.otf', subset: true },
   { file: 'NotoSansCJKkr-Regular.otf', subset: true },
   { file: 'NotoSerifBengali-VariableFont_wdth,wght.ttf', subset: true },
+  { file: 'ZhuqueFangsong-Regular.ttf', subset: true },
   // Latin/Cyrillic — just convert to WOFF2, no subsetting needed
   { file: 'IMFellEnglish-Regular.ttf', subset: false },
   { file: 'IMFellEnglish-Italic.ttf', subset: false },
