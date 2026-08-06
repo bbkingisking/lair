@@ -1,17 +1,9 @@
 import { execSync } from "node:child_process";
-import { existsSync, cpSync, globSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, cpSync, globSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve, basename } from "node:path";
 
-// Load .env file if present (for local dev); CI sets vars directly in the environment
-const envPath = resolve(".env");
-if (existsSync(envPath)) {
-  for (const line of readFileSync(envPath, "utf8").split("\n")) {
-    const match = line.match(/^\s*([^#=]+?)\s*=\s*(.*?)\s*$/);
-    if (match && !(match[1] in process.env)) {
-      process.env[match[1]] = match[2];
-    }
-  }
-}
+// Configuration comes from the environment only. On the build host the systemd
+// unit supplies it; by hand, export the vars or run the publish script.
 
 // Only needed when there is no local checkout to read from; the guard for that
 // lives below, once we know which mode we are in.
