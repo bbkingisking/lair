@@ -6,7 +6,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "predev": "npm run fetch-poems",
+    "predev": "npm run fetch-poems && npm run optimize-fonts",
     "dev": "astro dev",
     "optimize-fonts": "node scripts/optimize-fonts.mjs",
     "fetch-poems": "node scripts/fetch-poems.mjs",

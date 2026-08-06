@@ -27,5 +27,9 @@ pnpm-debug.log*
 .poetry-repo/
 src/content/poems/
 
+# subset webfonts, generated from fonts-src/ by scripts/optimize-fonts.mjs.
+# Derived from the fetched poem corpus, so a committed copy is stale by construction.
+public/fonts/
+
 # AI crap
 CLAUDE.md
