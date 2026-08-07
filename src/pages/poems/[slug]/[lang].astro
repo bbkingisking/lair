@@ -4,6 +4,7 @@ import LairLayout from '../../../layouts/LairLayout.astro';
 import { getScriptClass } from '../../../utils/language-map';
 import { authorToSlug } from '../../../utils/author-slug';
 import PoemDisplay from '../../../components/PoemDisplay.astro';
+import VersionTabs from '../../../components/VersionTabs.astro';
 import { versionTitle, attributedTitle } from '../../../utils/poem-title';
 import { excerpt } from '../../../utils/poem-excerpt';
 
@@ -107,54 +108,15 @@ const formatVersionLabel = (key: string, lang?: string) => {
   {scriptClass}
 >
   <style>
-    .versions-nav {
-      display: flex;
-      gap: 0;
-      margin-bottom: 1.5rem;
-      border-bottom: 2px solid var(--border);
-      flex-wrap: wrap;
-      position: relative;
-    }
-    
-    .version-tab {
-      padding: 0.5rem 1rem;
-      font-family: 'Inconsolata', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      border: none;
-      background: none;
-      color: var(--ink-faint);
-      text-decoration: none;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      transition: all 0.15s;
-    }
-    
-    .version-tab:hover {
-      color: var(--ink);
-    }
-    
-    .version-tab.active {
-      color: var(--rust);
-      border-bottom-color: var(--rust);
-    }
-
-    .compare-toggle {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
+    /* Specific enough to beat `.source-link`'s display whatever the source
+       order, rather than relying on sitting after it. */
     @media (max-width: 768px) {
-      .compare-toggle {
+      .source-link.compare-toggle {
         display: none;
       }
     }
 
     .source-icons {
-      margin-left: auto;
       display: flex;
       align-items: center;
     }
@@ -178,24 +140,22 @@ const formatVersionLabel = (key: string, lang?: string) => {
     }
   </style>
 
-  <nav class="versions-nav">
-    {available.map(({ key, language: versionLang }) => (
-      <a
-        href={`/poems/${poem.id}/${key}`}
-        class:list={['version-tab', { active: key === langKey }]}
-        lang={versionLang}
-        data-script={getScriptClass(versionLang)}
-      >
-        {formatVersionLabel(key, versionLang)}
-      </a>
-    ))}
-    {compareUrl && (
-      <a href={compareUrl} class="source-link compare-toggle" title="Side by side">
-        <img src="/side-by-side.svg" alt="Side by side" width="16" height="16" />
-      </a>
-    )}
-    {(isbnUrl || webUrl || sourceUrl) && (
+  <VersionTabs
+    label="Version selector"
+    tabs={available.map(({ key, language: versionLang }) => ({
+      href: `/poems/${poem.id}/${key}`,
+      label: formatVersionLabel(key, versionLang),
+      language: versionLang,
+      active: key === langKey,
+    }))}
+  >
+    {(compareUrl || isbnUrl || webUrl || sourceUrl) && (
       <span class="source-icons">
+        {compareUrl && (
+          <a href={compareUrl} class="source-link compare-toggle" title="Side by side">
+            <img src="/side-by-side.svg" alt="Side by side" width="16" height="16" />
+          </a>
+        )}
         {isbnUrl && (
           <a href={isbnUrl} class="source-link" target="_blank" rel="noopener noreferrer" title="View on Open Library">
             <img src="/isbn.svg" alt="ISBN" width="16" height="16" />
@@ -213,7 +173,7 @@ const formatVersionLabel = (key: string, lang?: string) => {
         )}
       </span>
     )}
-  </nav>
+  </VersionTabs>
 
   <PoemDisplay
     title={version.title}

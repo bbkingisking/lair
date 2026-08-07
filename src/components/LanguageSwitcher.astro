@@ -1,5 +1,5 @@
 ---
-import { getScriptClass } from '../utils/language-map';
+import VersionTabs from './VersionTabs.astro';
 
 export interface Props {
   available: { key: string; label: string; language: string }[];
@@ -37,17 +37,15 @@ const buildHref = (langKey: string) => {
 };
 ---
 
-<nav class="lang-switcher" aria-label="Language selector">
-  {available.map(({ key, label, language }) => (
-    <a
-      href={buildHref(key)}
-      class:list={['lang-tab', { active: key === current }]}
-      lang={language}
-      data-script={getScriptClass(language)}
-    >
-      {label}
-    </a>
-  ))}
+<VersionTabs
+  label="Language selector"
+  tabs={available.map(({ key, label, language }) => ({
+    href: buildHref(key),
+    label,
+    language,
+    active: key === current,
+  }))}
+>
   {(isbnUrl || webUrl || sourceUrl || compareToggle) && (
     <span class="source-icons">
       {compareToggle && (
@@ -72,44 +70,10 @@ const buildHref = (langKey: string) => {
       )}
     </span>
   )}
-</nav>
+</VersionTabs>
 
 <style>
-  .lang-switcher {
-    display: flex;
-    gap: 0;
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid var(--border);
-    flex-wrap: wrap;
-  }
-
-  .lang-tab {
-    padding: 0.5rem 1rem;
-    font-family: 'Inconsolata', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    border: none;
-    background: none;
-    color: var(--ink-faint);
-    text-decoration: none;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.15s;
-  }
-
-  .lang-tab:hover {
-    color: var(--ink);
-  }
-
-  .lang-tab.active {
-    color: var(--rust);
-    border-bottom-color: var(--rust);
-  }
-
   .source-icons {
-    margin-left: auto;
     display: flex;
     align-items: center;
   }
