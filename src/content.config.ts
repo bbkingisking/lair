@@ -25,32 +25,30 @@ function poemLoader(base: string) {
           sourceMap = raw;
         }
 
-        // The slug is what appears in URLs; the filename is what the source map
-        // is keyed by. They are only the same string most of the time.
-        const seen = new Map<string, string>();
-
         for (const file of files) {
-          const filename = basename(file, '.poem');
-          const id = slugify(filename);
+          const id = basename(file, '.poem');
 
-          const clash = seen.get(id);
-          if (clash) {
+          // The filename is the slug. add_poem writes them that way already —
+          // it folds punctuation and transliterates — so a name that is not
+          // its own slug was made or renamed by hand. Folding it here silently
+          // would leave the file and its URL disagreeing, which is exactly the
+          // indirection worth not having.
+          const slug = slugify(id);
+          if (slug !== id) {
             throw new Error(
-              `Two poems slugify to "${id}": ${clash}.poem and ${filename}.poem. ` +
-              'One would silently replace the other; rename one of them.',
+              `"${id}.poem" is not a slug; rename it to "${slug}.poem".`,
             );
           }
-          seen.set(id, filename);
 
           const raw = readFileSync(join(absBase, file), 'utf8');
           const data = yaml.load(raw) as Record<string, unknown>;
           const parsed = await parseData({ id, data });
-          if (repoUrl && sourceMap[filename]) {
-            // Encoded per path segment. Our own slugs are folded to ASCII so
-            // they never need this, but the file on the forge really is named
-            // with an en dash and we do not get to rename it — github serves
-            // that path only in its percent-encoded form.
-            const path = sourceMap[filename].split('/').map(encodeURIComponent).join('/');
+          if (repoUrl && sourceMap[id]) {
+            // Encoded per path segment. A no-op while filenames are slugs, but
+            // the path comes from the source map rather than from anything
+            // checked above, and github serves a non-ASCII path only in its
+            // encoded form — the raw one 404s.
+            const path = sourceMap[id].split('/').map(encodeURIComponent).join('/');
             parsed.sourceUrl = `${repoUrl}/${path}`;
           }
           store.set({ id, data: parsed, digest: generateDigest(raw), filePath: `src/content/poems/${file}` });
