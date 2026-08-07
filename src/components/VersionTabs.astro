@@ -1,0 +1,192 @@
+---
+import { getScriptClass } from '../utils/language-map';
+
+export interface Props {
+  /** Tabs in display order. */
+  tabs: { href: string; label: string; language: string; active: boolean }[];
+  /** Accessible name for the nav landmark. */
+  label: string;
+}
+
+const { tabs, label } = Astro.props;
+---
+
+<nav class="versions-nav" aria-label={label}>
+  <div class="tab-strip">
+    {tabs.map(({ href, label: text, language, active }) => (
+      <a
+        href={href}
+        class:list={['version-tab', { active }]}
+        lang={language}
+        data-script={getScriptClass(language)}
+      >
+        {text}
+      </a>
+    ))}
+  </div>
+  {/* The chevrons are physical directions, so the pair is pinned to ltr: in a
+      right-to-left panel the row reverses and ‹ would otherwise be drawn to the
+      right of ›. Both are hidden until the script measures the strip as actually
+      overflowing — without JavaScript the strip still scrolls by touch and
+      trackpad, so the versions stay reachable, only the click affordance goes. */}
+  <span class="strip-arrows">
+    <button type="button" class="strip-arrow" data-scroll="-1" aria-label="Scroll versions left" hidden>‹</button>
+    <button type="button" class="strip-arrow" data-scroll="1" aria-label="Scroll versions right" hidden>›</button>
+  </span>
+  <slot />
+</nav>
+
+<style>
+  .versions-nav {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .tab-strip {
+    /* Sized from the space left over rather than from the tabs, so the trailing
+       icons sit at the end of the row however many versions there are. */
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    /* The arrows are the affordance; a scrollbar here would sit on the rule. */
+    scrollbar-width: none;
+    /* Drops the strip onto the nav's rule so the active tab's underline covers
+       it rather than floating 2px above it. */
+    margin-bottom: -2px;
+  }
+
+  .tab-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .version-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    background: none;
+    color: var(--ink-faint);
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .version-tab:hover {
+    color: var(--ink);
+  }
+
+  .version-tab.active {
+    color: var(--rust);
+    border-bottom-color: var(--rust);
+  }
+
+  .strip-arrows {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    direction: ltr;
+  }
+
+  .strip-arrow {
+    border: none;
+    background: none;
+    padding: 0 0.35rem;
+    font-family: 'Inconsolata', monospace;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--ink-faint);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s, color 0.15s;
+  }
+
+  .strip-arrow:hover:not(:disabled) {
+    color: var(--ink);
+    opacity: 1;
+  }
+
+  .strip-arrow:disabled {
+    opacity: 0.15;
+    cursor: default;
+  }
+
+  /* `hidden` alone loses to `display: flex` inherited through the cascade. */
+  .strip-arrow[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  function initVersionTabs() {
+    document.querySelectorAll<HTMLElement>('.versions-nav').forEach(function (nav) {
+      if (nav.dataset.tabsInit) return;
+      const strip = nav.querySelector<HTMLElement>('.tab-strip');
+      const arrows = nav.querySelectorAll<HTMLButtonElement>('.strip-arrow');
+      if (!strip || !arrows.length) return;
+      nav.dataset.tabsInit = 'true';
+
+      function update() {
+        const slack = strip!.scrollWidth - strip!.clientWidth;
+        // Both scrollLeft conventions: left-to-right counts up from 0, and
+        // right-to-left (the Persian panels in the compare view) counts down
+        // from 0 to a negative minimum.
+        const rtl = getComputedStyle(strip!).direction === 'rtl';
+        const min = rtl ? -slack : 0;
+        const max = rtl ? 0 : slack;
+        arrows.forEach(function (arrow) {
+          // Both arrows stay in place once the strip overflows — hiding the one
+          // at its end would shift the icons beside it on every scroll.
+          arrow.hidden = slack <= 1;
+          arrow.disabled = Number(arrow.dataset.scroll) < 0
+            ? strip!.scrollLeft <= min + 1
+            : strip!.scrollLeft >= max - 1;
+        });
+      }
+
+      arrows.forEach(function (arrow) {
+        arrow.addEventListener('click', function () {
+          strip!.scrollBy({ left: Number(arrow.dataset.scroll) * strip!.clientWidth * 0.7 });
+        });
+      });
+
+      // Land on the version you are reading. Measured and assigned rather than
+      // scrollIntoView'd, which would also scroll the page.
+      function revealActive() {
+        const active = strip!.querySelector<HTMLElement>('.version-tab.active');
+        if (!active) return;
+        const stripBox = strip!.getBoundingClientRect();
+        const tabBox = active.getBoundingClientRect();
+        if (tabBox.left >= stripBox.left && tabBox.right <= stripBox.right) return;
+        // `scroll-behavior: smooth` would animate this on arrival.
+        const previous = strip!.style.scrollBehavior;
+        strip!.style.scrollBehavior = 'auto';
+        strip!.scrollLeft += tabBox.left - stripBox.left - (stripBox.width - tabBox.width) / 2;
+        strip!.style.scrollBehavior = previous;
+      }
+
+      strip.addEventListener('scroll', update, { passive: true });
+      new ResizeObserver(update).observe(strip);
+      // Tab widths move once Inconsolata replaces the fallback, which changes
+      // whether the strip overflows and invalidates the measurements below —
+      // without resizing the strip itself, so the observer never hears about it.
+      if (document.fonts) document.fonts.ready.then(function () {
+        revealActive();
+        update();
+      });
+
+      revealActive();
+      update();
+    });
+  }
+
+  document.addEventListener('astro:page-load', initVersionTabs);
+</script>
