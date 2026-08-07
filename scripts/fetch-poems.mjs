@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { existsSync, cpSync, globSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, cpSync, globSync, mkdirSync, writeFileSync, readdirSync, rmSync } from "node:fs";
 import { resolve, basename } from "node:path";
 
 // Configuration comes from the environment only. On the build host the systemd
@@ -55,12 +55,22 @@ try {
 
   mkdirSync(DEST, { recursive: true });
   const sourceMap = {};
+  const expected = new Set();
   for (const poem of poems) {
     const filename = poem.split("/").pop();
+    expected.add(filename);
     cpSync(resolve(sourceDir, poem), resolve(DEST, filename));
     const id = basename(filename, '.poem');
     sourceMap[id] = poem;
   }
+
+  // This directory is a copy, not a cache, so anything no longer upstream has
+  // to go. Only ever adding to it means a renamed poem keeps its old page and
+  // a deleted one is never actually deleted — the build cannot tell the
+  // difference between a poem and the ghost of one.
+  const pruned = readdirSync(DEST)
+    .filter(f => f.endsWith('.poem') && !expected.has(f));
+  for (const stale of pruned) rmSync(resolve(DEST, stale));
 
   // An explicit base wins. Otherwise derive one from the checkout's remote,
   // which only produces a usable URL for GitHub-shaped hosts — other forges
@@ -81,7 +91,7 @@ try {
 
   writeFileSync(resolve(DEST, '.source-map.json'), JSON.stringify({ _repoUrl: blobBase, ...sourceMap }, null, 2));
 
-  console.log(`[fetch-poems] Synced ${poems.length} .poem files from ${sourceDir}`);
+  console.log(`[fetch-poems] Synced ${poems.length} .poem files from ${sourceDir}${pruned.length ? `, pruned ${pruned.length}` : ""}`);
   console.log(`[fetch-poems] Source links → ${blobBase}`);
 } catch (err) {
   console.error("[fetch-poems] Failed to fetch poems:", err.message);
