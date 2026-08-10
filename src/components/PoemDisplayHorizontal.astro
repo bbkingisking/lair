@@ -14,12 +14,15 @@ const { title, author, authorSlug, translator, language, text, rtl = false, dram
 
 interface Speech {
   speaker: string | null;
+  direction: string | null;
   lines: string[];
 }
 
-// A speaker label is a line holding nothing but an all-caps name ending in a
-// period, e.g. "VALENTINE." or "LUSTIGE PERSON." Everything else is speech.
-const SPEAKER = /^([\p{Lu}][\p{Lu}\p{Zs}'’.\-]*\.)$/u;
+// A speaker label is a line holding nothing but an all-caps name, optionally
+// followed by a bracketed stage direction, ending in a period:
+//   "VALENTINE."   "LUSTIGE PERSON."   "FAUST [dancing with the young witch]."
+// The direction is captured separately so it does not widen the name column.
+const SPEAKER = /^([\p{Lu}][\p{Lu}\p{Zs}'’\-]*?)\s*(?:\[([^\]]*)\]|\(([^)]*)\))?\.$/u;
 
 function parseDrama(source: string): Speech[] {
   const speeches: Speech[] = [];
@@ -27,13 +30,16 @@ function parseDrama(source: string): Speech[] {
 
   for (const line of source.replace(/\s+$/, '').split('\n')) {
     const trimmed = line.trim();
-    if (SPEAKER.test(trimmed)) {
-      current = { speaker: trimmed, lines: [] };
+    const match = trimmed.match(SPEAKER);
+    if (match) {
+      const [, name, bracketed, parenthesised] = match;
+      const direction = bracketed ?? parenthesised ?? null;
+      current = { speaker: `${name}.`, direction, lines: [] };
       speeches.push(current);
       continue;
     }
     if (!current) {
-      current = { speaker: null, lines: [] };
+      current = { speaker: null, direction: null, lines: [] };
       speeches.push(current);
     }
     current.lines.push(line);
@@ -67,7 +73,9 @@ const useDrama = speeches.some((s) => s.speaker !== null);
       {speeches.map((speech) => (
         <Fragment>
           <div class="drama-speaker">{speech.speaker}</div>
-          <div class="drama-speech">{speech.lines.join('\n')}</div>
+          {/* No literal whitespace inside .drama-speech: it is pre-wrap, so any
+              indentation in this template would render as part of the verse. */}
+          <div class="drama-speech">{speech.direction && <span class="drama-direction">{speech.direction}</span>}{speech.lines.join('\n')}</div>
         </Fragment>
       ))}
     </div>
