@@ -60,8 +60,10 @@ const authorSlug = canonical.author ? authorToSlug(canonical.author) : undefined
 
 const isRtl1 = version1.rtl === true;
 const isVertical1 = version1.vertical === true;
+const isDrama1 = version1.drama === true;
 const isRtl2 = version2.rtl === true;
 const isVertical2 = version2.vertical === true;
+const isDrama2 = version2.drama === true;
 
 const LANG_NAMES: Record<string, string> = {
   eng: 'English',
@@ -129,6 +131,7 @@ const available = Object.entries(poem.data)
         text={version1.text}
         rtl={isRtl1}
         vertical={isVertical1}
+        drama={isDrama1}
       />
     </div>
     
@@ -154,6 +157,7 @@ const available = Object.entries(poem.data)
         text={version2.text}
         rtl={isRtl2}
         vertical={isVertical2}
+        drama={isDrama2}
       />
     </div>
   </div>

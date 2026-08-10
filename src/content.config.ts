@@ -73,6 +73,7 @@ const versionSchema = z.object({
   epigraph: z.string().optional(),
   rtl: z.boolean().optional(),
   vertical: z.boolean().optional(),
+  drama: z.boolean().optional(),
 }).catchall(z.any());                    // additionalProperties: true
 
 const poemsCollection = defineCollection({

@@ -11,9 +11,10 @@ export interface Props {
   text: string;
   rtl?: boolean;
   vertical?: boolean;
+  drama?: boolean;
 }
 
-const { title, author, authorSlug, translator, language, text, rtl = false, vertical = false } = Astro.props;
+const { title, author, authorSlug, translator, language, text, rtl = false, vertical = false, drama = false } = Astro.props;
 ---
 
 {vertical ? (
@@ -34,5 +35,6 @@ const { title, author, authorSlug, translator, language, text, rtl = false, vert
     language={language}
     text={text}
     rtl={rtl}
+    drama={drama}
   />
 )}

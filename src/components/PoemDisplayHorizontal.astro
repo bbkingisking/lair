@@ -7,9 +7,50 @@ export interface Props {
   language: string;
   text: string;
   rtl?: boolean;
+  drama?: boolean;
 }
 
-const { title, author, authorSlug, translator, language, text, rtl = false } = Astro.props;
+const { title, author, authorSlug, translator, language, text, rtl = false, drama = false } = Astro.props;
+
+interface Speech {
+  speaker: string | null;
+  lines: string[];
+}
+
+// A speaker label is a line holding nothing but an all-caps name ending in a
+// period, e.g. "VALENTINE." or "LUSTIGE PERSON." Everything else is speech.
+const SPEAKER = /^([\p{Lu}][\p{Lu}\p{Zs}'’.\-]*\.)$/u;
+
+function parseDrama(source: string): Speech[] {
+  const speeches: Speech[] = [];
+  let current: Speech | null = null;
+
+  for (const line of source.replace(/\s+$/, '').split('\n')) {
+    const trimmed = line.trim();
+    if (SPEAKER.test(trimmed)) {
+      current = { speaker: trimmed, lines: [] };
+      speeches.push(current);
+      continue;
+    }
+    if (!current) {
+      current = { speaker: null, lines: [] };
+      speeches.push(current);
+    }
+    current.lines.push(line);
+  }
+
+  for (const speech of speeches) {
+    while (speech.lines.length && !speech.lines[0].trim()) speech.lines.shift();
+    while (speech.lines.length && !speech.lines[speech.lines.length - 1].trim()) speech.lines.pop();
+  }
+
+  return speeches.filter((s) => s.speaker || s.lines.length);
+}
+
+const speeches = drama ? parseDrama(text) : [];
+// Only use the two-column layout if parsing actually found speakers; otherwise
+// fall back to the plain <pre> so a mislabelled poem still renders correctly.
+const useDrama = speeches.some((s) => s.speaker !== null);
 ---
 
 <article
@@ -21,7 +62,18 @@ const { title, author, authorSlug, translator, language, text, rtl = false } = A
   {title && <h1 class="poem-title">{title}</h1>}
   {author && <p class="poem-author">{authorSlug ? <a href={`/author/${authorSlug}`}>{author}</a> : author}</p>}
   <hr class="poem-divider" />
-  <pre class="poem-text">{text}</pre>
+  {useDrama ? (
+    <div class="poem-drama">
+      {speeches.map((speech) => (
+        <Fragment>
+          <div class="drama-speaker">{speech.speaker}</div>
+          <div class="drama-speech">{speech.lines.join('\n')}</div>
+        </Fragment>
+      ))}
+    </div>
+  ) : (
+    <pre class="poem-text">{text}</pre>
+  )}
   {translator && (
     <hr class="poem-divider" />
     <p class="poem-translator">translated by: {translator}</p>

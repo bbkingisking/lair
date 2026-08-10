@@ -36,6 +36,7 @@ const language = version.language || 'en';
 const scriptClass = getScriptClass(language);
 const isRtl = version.rtl === true;
 const isVertical = version.vertical === true;
+const isDrama = version.drama === true;
 const authorSlug = canonical.author ? authorToSlug(canonical.author) : undefined;
 
 const sourceUrl = poem.data.sourceUrl as string | undefined;
@@ -184,5 +185,6 @@ const formatVersionLabel = (key: string, lang?: string) => {
     text={version.text}
     rtl={isRtl}
     vertical={isVertical}
+    drama={isDrama}
   />
 </LairLayout>
